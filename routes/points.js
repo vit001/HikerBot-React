@@ -27,7 +27,7 @@ router.get('/', function(req, res, next) {
                         "type": "Feature",
                         "geometry": {
                             "type": "Point",
-                            "coordinates": [response[j].late6, response[j].lone6]
+                            "coordinates": [response[j].late6*1e-6, response[j].lone6*1e-6]
                         },
                         "properties": {
                             "name":        response[j].name
