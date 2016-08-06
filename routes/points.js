@@ -22,13 +22,18 @@ router.get('/', function(req, res, next) {
                 pointlist.points = points;
 
                 for ( var j = 0; j < response.length; j++ ) {
+
                     var point = {
-                        "id":          response[j].id.toString(),
-                        "name":        response[j].name,
-                        "description": response[j].description,
-                        "late6":       response[j].late6,
-                        "lone6":       response[j].lone6
-                    }
+                        "type": "Feature",
+                        "geometry": {
+                            "type": "Point",
+                            "coordinates": [response[j].late6, response[j].lone6]
+                        },
+                        "properties": {
+                            "name":        response[j].name
+                            //"description": response[j].description
+                        }
+                    };
 
                     pointlist.points.push(point);
                 }
