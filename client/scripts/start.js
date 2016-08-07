@@ -3,7 +3,11 @@ process.env.NODE_ENV = 'development';
 var path = require('path');
 var chalk = require('chalk');
 var webpack = require('webpack');
-var WebpackDevServer = require('webpack-dev-server');
+const express = require('express');
+const http = require('http');
+const httpProxy = require('http-proxy');
+const WebpackDevMiddleware = require('webpack-dev-middleware');
+const WebpackHotMiddleware = require('webpack-hot-middleware');
 var execSync = require('child_process').execSync;
 var opn = require('opn');
 var detect = require('./utils/detectPort');
@@ -11,6 +15,7 @@ var prompt = require('./utils/prompt');
 var config = require('../config/webpack.config.dev');
 
 // Tools like Cloud9 rely on this
+const app = express();
 var DEFAULT_PORT = process.env.PORT || 3000;
 var compiler;
 
@@ -39,7 +44,7 @@ function isLikelyASyntaxError(message) {
 
 function formatMessage(message) {
   return message
-    // Make some common errors shorter:
+  // Make some common errors shorter:
     .replace(
       // Babel syntax error
       'Module build failed: SyntaxError:',
@@ -63,12 +68,12 @@ function clearConsole() {
 function setupCompiler(port) {
   compiler = webpack(config, handleCompile);
 
-  compiler.plugin('invalid', function() {
+  compiler.plugin('invalid', function () {
     clearConsole();
     console.log('Compiling...');
   });
 
-  compiler.plugin('done', function(stats) {
+  compiler.plugin('done', function (stats) {
     clearConsole();
     var hasErrors = stats.hasErrors();
     var hasWarnings = stats.hasWarnings();
@@ -120,6 +125,19 @@ function setupCompiler(port) {
   });
 }
 
+function setupProxy(port, proxyPort) {
+  const proxy = httpProxy.createProxyServer({});
+  proxy.on('error', e => {
+    console.error(chalk.red('Error in proxy ->', e.message));
+  });
+
+  console.log(chalk.cyan(`Setting up proxy from ${port} to ${proxyPort}`));
+  app.use((req, res) => {
+    const url = `http://localhost:${proxyPort}`;
+    return proxy.web(req, res, {target: url});
+  });
+}
+
 function openBrowser(port) {
   if (process.platform === 'darwin') {
     try {
@@ -142,7 +160,7 @@ function openBrowser(port) {
 }
 
 function runDevServer(port) {
-  new WebpackDevServer(compiler, {
+  app.use(WebpackDevMiddleware(compiler, {
     historyApiFallback: true,
     hot: true, // Note: only CSS is currently hot reloaded
     publicPath: config.output.publicPath,
@@ -150,37 +168,43 @@ function runDevServer(port) {
     watchOptions: {
       ignored: /node_modules/
     }
-  }).listen(port, (err, result) => {
-    if (err) {
-      return console.log(err);
-    }
+  }));
 
-    clearConsole();
-    console.log(chalk.cyan('Starting the development server...'));
-    console.log();
-    openBrowser(port);
-  });
+  app.use(WebpackHotMiddleware(compiler));
+
+  http.createServer(app)
+    .listen(port, 'localhost')
+    .on('listening', () => {
+      console.log(chalk.cyan('Starting the development server...'));
+      console.log();
+      openBrowser(port);
+    });
 }
 
 function run(port) {
   setupCompiler(port);
+  if (port !== DEFAULT_PORT) {
+    setupProxy(port, DEFAULT_PORT);
+  }
+
   runDevServer(port);
 }
 
-detect(DEFAULT_PORT).then(port => {
-  if (port === DEFAULT_PORT) {
-    run(port);
-    return;
-  }
-
-  clearConsole();
-  var question =
-    chalk.yellow('Something is already running at port ' + DEFAULT_PORT + '.') +
-    '\n\nWould you like to run the app at another port instead?';
-
-  prompt(question, true).then(shouldChangePort => {
-    if (shouldChangePort) {
-      run(port);
-    }
-  });
-});
+detect(DEFAULT_PORT).then(port => run(port));
+// detect(DEFAULT_PORT).then(port => {
+//   if (port === DEFAULT_PORT) {
+//     run(port);
+//     return;
+//   }
+//
+//   clearConsole();
+//   var question =
+//     chalk.yellow('Something is already running at port ' + DEFAULT_PORT + '.') +
+//     '\n\nWould you like to run the app at another port instead?';
+//
+//   prompt(question, true).then(shouldChangePort => {
+//     if (shouldChangePort) {
+//       run(port);
+//     }
+//   });
+// });

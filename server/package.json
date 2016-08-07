@@ -3,7 +3,11 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "npm-run-all --parallel server:start client:start",
+    "start-prod": "npm-run-all client:build server:start",
+    "server:start": "node ./bin/www",
+    "client:start": "cd ../client && node ./scripts/start.js",
+    "client:build": "cd ../client && node ./scripts/build.js"
   },
   "dependencies": {
     "body-parser": "~1.15.1",
@@ -15,5 +19,8 @@
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
     "thrift": "^0.9.3"
+  },
+  "devDependencies": {
+    "npm-run-all": "^2.3.0"
   }
 }

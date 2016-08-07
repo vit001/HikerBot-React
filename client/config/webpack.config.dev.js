@@ -6,9 +6,9 @@ var CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
 var paths = require('./paths');
 
 module.exports = {
-  devtool: 'eval',
+  devtool: 'eval-source-map',
   entry: [
-    require.resolve('webpack-dev-server/client') + '?/',
+    require.resolve('webpack-hot-middleware/client') + '?path=/__webpack_hmr',
     require.resolve('webpack/hot/dev-server'),
     require.resolve('./polyfills'),
     path.join(paths.appSrc, 'index')
@@ -98,6 +98,7 @@ module.exports = {
     new webpack.DefinePlugin({ 'process.env.NODE_ENV': '"development"' }),
     // Note: only CSS is currently hot reloaded
     new webpack.HotModuleReplacementPlugin(),
-    new CaseSensitivePathsPlugin()
+    new CaseSensitivePathsPlugin(),
+    new webpack.NoErrorsPlugin()
   ]
 };
