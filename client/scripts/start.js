@@ -1,30 +1,30 @@
 process.env.NODE_ENV = 'development';
 
-var path = require('path');
-var chalk = require('chalk');
-var webpack = require('webpack');
+const path = require('path');
+const chalk = require('chalk');
+const webpack = require('webpack');
 const express = require('express');
 const http = require('http');
 const httpProxy = require('http-proxy');
 const WebpackDevMiddleware = require('webpack-dev-middleware');
 const WebpackHotMiddleware = require('webpack-hot-middleware');
-var execSync = require('child_process').execSync;
-var opn = require('opn');
-var detect = require('./utils/detectPort');
-var prompt = require('./utils/prompt');
-var config = require('../config/webpack.config.dev');
+const execSync = require('child_process').execSync;
+const opn = require('opn');
+const detect = require('./utils/detectPort');
+const config = require('../config/webpack.config.dev');
 
 // Tools like Cloud9 rely on this
 const app = express();
-var DEFAULT_PORT = process.env.PORT || 3000;
-var compiler;
+const DEFAULT_PORT = process.env.PORT || 3001;
+const PROXY_PORT = process.env.PROXY_PORT || 3000;
+let compiler;
 
 // TODO: hide this behind a flag and eliminate dead code on eject.
 // This shouldn't be exposed to the user.
-var handleCompile;
-var isSmokeTest = process.argv.some(arg => arg.indexOf('--smoke-test') > -1);
+let handleCompile;
+const isSmokeTest = process.argv.some(arg => arg.indexOf('--smoke-test') > -1);
 if (isSmokeTest) {
-  handleCompile = function (err, stats) {
+  handleCompile = (err, stats)=> {
     if (err || stats.hasErrors() || stats.hasWarnings()) {
       process.exit(1);
     } else {
@@ -33,7 +33,7 @@ if (isSmokeTest) {
   };
 }
 
-var friendlySyntaxErrorLabel = 'Syntax error:';
+const friendlySyntaxErrorLabel = 'Syntax error:';
 
 function isLikelyASyntaxError(message) {
   return message.indexOf(friendlySyntaxErrorLabel) !== -1;
@@ -68,15 +68,15 @@ function clearConsole() {
 function setupCompiler(port) {
   compiler = webpack(config, handleCompile);
 
-  compiler.plugin('invalid', function () {
+  compiler.plugin('invalid', () => {
     clearConsole();
     console.log('Compiling...');
   });
 
-  compiler.plugin('done', function (stats) {
+  compiler.plugin('done', stats => {
     clearConsole();
-    var hasErrors = stats.hasErrors();
-    var hasWarnings = stats.hasWarnings();
+    let hasErrors = stats.hasErrors();
+    let hasWarnings = stats.hasWarnings();
     if (!hasErrors && !hasWarnings) {
       console.log(chalk.green('Compiled successfully!'));
       console.log();
@@ -85,11 +85,11 @@ function setupCompiler(port) {
       return;
     }
 
-    var json = stats.toJson();
-    var formattedErrors = json.errors.map(message =>
+    const json = stats.toJson();
+    let formattedErrors = json.errors.map(message =>
       'Error in ' + formatMessage(message)
     );
-    var formattedWarnings = json.warnings.map(message =>
+    const formattedWarnings = json.warnings.map(message =>
       'Warning in ' + formatMessage(message)
     );
 
@@ -128,13 +128,18 @@ function setupCompiler(port) {
 function setupProxy(port, proxyPort) {
   const proxy = httpProxy.createProxyServer({});
   proxy.on('error', e => {
-    console.error(chalk.red('Error in proxy ->', e.message));
+    console.error('Error in proxy ->', e.message);
   });
 
   console.log(chalk.cyan(`Setting up proxy from ${port} to ${proxyPort}`));
-  app.use((req, res) => {
-    const url = `http://localhost:${proxyPort}`;
-    return proxy.web(req, res, {target: url});
+  app.use((req, res, next) => {
+    if (/^\/server/.test(req.url)) {
+      console.log(chalk.cyan(`Calling proxy for ${req.url}`));
+      const url = `http://localhost:${proxyPort}`;
+      return proxy.web(req, res, {target: url});
+    }
+
+    next();
   });
 }
 
@@ -175,7 +180,7 @@ function runDevServer(port) {
   http.createServer(app)
     .listen(port, 'localhost')
     .on('listening', () => {
-      console.log(chalk.cyan('Starting the development server...'));
+      console.log(chalk.cyan(`Starting the development server on port ${port}...`));
       console.log();
       openBrowser(port);
     });
@@ -183,28 +188,8 @@ function runDevServer(port) {
 
 function run(port) {
   setupCompiler(port);
-  if (port !== DEFAULT_PORT) {
-    setupProxy(port, DEFAULT_PORT);
-  }
-
+  setupProxy(port, PROXY_PORT);
   runDevServer(port);
 }
 
 detect(DEFAULT_PORT).then(port => run(port));
-// detect(DEFAULT_PORT).then(port => {
-//   if (port === DEFAULT_PORT) {
-//     run(port);
-//     return;
-//   }
-//
-//   clearConsole();
-//   var question =
-//     chalk.yellow('Something is already running at port ' + DEFAULT_PORT + '.') +
-//     '\n\nWould you like to run the app at another port instead?';
-//
-//   prompt(question, true).then(shouldChangePort => {
-//     if (shouldChangePort) {
-//       run(port);
-//     }
-//   });
-// });

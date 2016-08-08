@@ -3,7 +3,7 @@ import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import * as actions from '../store/actions'
 import './MapView.css';
-import {Gmaps, Marker, InfoWindow, Circle} from 'react-gmaps';
+import {Gmaps, Marker} from 'react-gmaps';
 
 class MapView extends Component {
   constructor(props) {
