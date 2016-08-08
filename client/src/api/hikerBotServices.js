@@ -6,8 +6,16 @@ export function getCurrentPosition() {
   });
 }
 
-export function getPoints() {
-  return fetch('/server/dummy')
+export function getPoints(bounds = 'asd', zoom = 12) {
+  const body = JSON.stringify({bounds, zoom});
+  return fetch('/server/dummy/getPoints', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body
+  })
     .then(result => {
       if (!result.ok) {
         return Promise.reject(result.status);

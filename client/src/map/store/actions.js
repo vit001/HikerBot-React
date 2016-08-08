@@ -7,9 +7,9 @@ export function getCurrentPosition() {
   }
 }
 
-export function getPoints() {
+export function getPoints(bounds, zoom) {
   return {
     type: 'GET_POINTS',
-    payload: api.getPoints()
+    payload: api.getPoints(bounds, zoom)
   }
 }

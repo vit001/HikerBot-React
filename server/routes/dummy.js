@@ -65,8 +65,8 @@ const dummyJson = {
   ]
 };
 
-/* GET all selectors */
-router.get('/', (req, res) => {
+router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
+  console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
   res.status(200).send(dummyJson);
 });
 

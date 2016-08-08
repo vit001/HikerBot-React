@@ -26,8 +26,10 @@ class MapView extends Component {
   }
 
   getPoints() {
-    const {actions: {getPoints}} = this.props;
-    getPoints();
+    const {actions: {getPoints}} = this.props,
+      bounds = this.map.getBounds().toJSON(),
+      zoom = this.map.getZoom();
+    getPoints(bounds, zoom);
   }
 
   componentWillReceiveProps({geoJson}) {
