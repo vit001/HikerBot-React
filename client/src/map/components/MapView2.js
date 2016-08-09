@@ -2,25 +2,24 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import * as actions from '../store/actions'
-import {Gmaps} from 'react-gmaps';
-import './MapView.css';
+import GoogleMap from 'google-map-react';
+import './MapView2.css';
 
 class MapView extends Component {
   constructor(props) {
     super(props);
-    this.onIdle = this.onIdle.bind(this);
-    this.onMapCreated = this.onMapCreated.bind(this);
+    this.defaultCenter = props.center;
+    this.defaultZoom = props.zoom;
+    this.onChange = this.onChange.bind(this);
+    this.onGoogleApiLoaded = this.onGoogleApiLoaded.bind(this);
   }
 
-  onIdle() {
+  onChange({bounds, center, zoom}) {
     const {actions: {setBounds}} = this.props;
-    const bounds = this.map.getBounds().toJSON();
-    const center = this.map.getCenter().toJSON();
-    const zoom = this.map.getZoom();
     setBounds(bounds, center, zoom);
   }
 
-  onMapCreated(map) {
+  onGoogleApiLoaded({map}) {
     this.map = map;
     map.setOptions({
       disableDefaultUI: true
@@ -28,24 +27,23 @@ class MapView extends Component {
   }
 
   componentWillReceiveProps({geoJson}) {
-    this.map.data.addGeoJson(geoJson);
+    if (this.map) {
+      this.map.data.addGeoJson(geoJson);
+    }
   }
 
   render() {
-    const {center: {lat, lng}, zoom} = this.props;
+    const {center, zoom} = this.props;
     return (
       <div className="map">
-        <Gmaps
-          width={'800px'}
-          height={'600px'}
-          lat={lat}
-          lng={lng}
+        <GoogleMap
+          defaultCenter={this.defaultCenter}
+          center={center}
+          defaultZoom={this.defaultZoom}
           zoom={zoom}
-          loadingMessage={'Be happy'}
-          params={{v: '3.exp'}}
-          onIdle={this.onIdle}
-          onMapCreated={this.onMapCreated}>
-        </Gmaps>
+          onChange={this.onChange}
+          onGoogleApiLoaded={this.onGoogleApiLoaded}
+          yesIWantToUseGoogleMapApiInternals/>
       </div>
     );
   }

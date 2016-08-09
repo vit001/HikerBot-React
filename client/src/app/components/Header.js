@@ -6,7 +6,7 @@ const Header = () => {
     <nav>
       <IndexLink to="/" activeClassName="active">react-gmaps</IndexLink>
       {" | "}
-      <Link to="/map2" activeClassName="active">About</Link>
+      <Link to="/map2" activeClassName="active">google-map-react</Link>
     </nav>
   );
 };
