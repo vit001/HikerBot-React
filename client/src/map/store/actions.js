@@ -1,15 +1,6 @@
-import * as api from '../../api/hikerBotServices';
-
-export function getCurrentPosition() {
+export function setBounds(bounds, center, zoom) {
   return {
-    type: 'GET_POSITION',
-    payload: api.getCurrentPosition()
-  }
-}
-
-export function getPoints(bounds, zoom) {
-  return {
-    type: 'GET_POINTS',
-    payload: api.getPoints(bounds, zoom)
+    type: 'SET_BOUNDS',
+    payload: {bounds, center, zoom}
   }
 }

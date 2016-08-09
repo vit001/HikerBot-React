@@ -17,9 +17,7 @@ class Root extends Component {
   }
 
   getPoints() {
-    const {actions: {getPoints}} = this.props,
-      bounds = this.map.getBounds().toJSON(),
-      zoom = this.map.getZoom();
+    const {bounds, zoom, actions: {getPoints}} = this.props;
     getPoints(bounds, zoom);
   }
 
@@ -37,7 +35,7 @@ class Root extends Component {
 }
 
 export default connect(
-  state => ({}),
+  ({map: {bounds, zoom}}) => ({bounds, zoom}),
   dispatch => ({
     actions: bindActionCreators(actions, dispatch)
   })

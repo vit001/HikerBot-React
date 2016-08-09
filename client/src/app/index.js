@@ -4,8 +4,6 @@ import {Router, browserHistory} from 'react-router';
 import routes from './routes';
 import configureStore from './store/store';
 
-import Root from './components/Root';
-
 const store = configureStore();
 
 class Index extends Component {

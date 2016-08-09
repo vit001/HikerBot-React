@@ -1,12 +1,23 @@
 import React, {Component} from 'react';
+import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
+import * as actions from '../store/actions'
+import {Gmaps} from 'react-gmaps';
 import './MapView.css';
-import {Gmaps, Marker} from 'react-gmaps';
 
 class MapView extends Component {
   constructor(props) {
     super(props);
+    this.onBoundsChanged = this.onBoundsChanged.bind(this);
     this.onMapCreated = this.onMapCreated.bind(this);
+  }
+
+  onBoundsChanged() {
+    const {actions: {setBounds}} = this.props;
+    const bounds = this.map.getBounds().toJSON();
+    const center = this.map.getCenter().toJSON();
+    const zoom = this.map.getZoom();
+    setBounds(bounds, center, zoom);
   }
 
   onMapCreated(map) {
@@ -21,7 +32,7 @@ class MapView extends Component {
   }
 
   render() {
-    const {coords: {lat, lng} = {lat: 0, lng: 0}} = this.props;
+    const {center: {lat, lng}, zoom} = this.props;
     return (
       <div className="map">
         <Gmaps
@@ -29,17 +40,21 @@ class MapView extends Component {
           height={'600px'}
           lat={lat}
           lng={lng}
-          zoom={2}
+          zoom={zoom}
           loadingMessage={'Be happy'}
           params={{v: '3.exp'}}
+          onBoundsChanged={this.onBoundsChanged}
           onMapCreated={this.onMapCreated}>
-          <Marker lat={lat} lng={lng}/>
         </Gmaps>
       </div>
     );
   }
 }
 
-export default connect(({map: {coords, geoJson}}) => {
-  return {coords, geoJson};
-})(MapView);
+export default connect(
+  ({map: {center, geoJson, zoom}}) => ({center, geoJson, zoom}),
+  dispatch => ({
+    actions: bindActionCreators(actions, dispatch)
+  })
+)
+(MapView);

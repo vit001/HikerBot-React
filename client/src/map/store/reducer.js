@@ -1,12 +1,14 @@
 const initialState = {
-  coords: {
+  center: {
     lat: 51.5258541,
     lng: -0.08040660000006028
   },
   geoJson: {
     "type": "FeatureCollection",
     "features": []
-  }
+  },
+  bounds: {},
+  zoom: 2
 };
 
 
@@ -15,7 +17,7 @@ function reducer(state = initialState, {type, payload}) {
     case 'GET_POSITION_FULFILLED':
       return {
         ...state,
-        coords: {
+        center: {
           lat: payload.latitude,
           lng: payload.longitude
         }
@@ -24,6 +26,11 @@ function reducer(state = initialState, {type, payload}) {
       return {
         ...state,
         geoJson: payload
+      };
+    case 'SET_BOUNDS':
+      return {
+        ...state,
+        ...payload
       };
     case 'GET_POSITION_PENDING':
     case 'GET_POSITION_REJECTED':
