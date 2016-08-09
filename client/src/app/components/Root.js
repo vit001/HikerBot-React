@@ -1,27 +1,43 @@
 import React, {Component} from 'react';
 import {bindActionCreators} from 'redux';
 import {connect} from 'react-redux';
+import Header from './Header';
 import * as actions from '../store/actions';
-import MapView from '../../map/index';
 
 class Root extends Component {
-  render() {
-    const {loading, error} = this.props;
-    if (error) {
-      return <div>{error}</div>;
-    }
+  constructor(props) {
+    super(props);
+    this.getCurrentPositionClick = this.getCurrentPositionClick.bind(this);
+    this.getPoints = this.getPoints.bind(this);
+  }
 
-    return loading
-      ? <div>loading</div>
-      : <MapView />;
+  getCurrentPositionClick() {
+    const {actions: {getCurrentPosition}} = this.props;
+    getCurrentPosition();
+  }
+
+  getPoints() {
+    const {actions: {getPoints}} = this.props,
+      bounds = this.map.getBounds().toJSON(),
+      zoom = this.map.getZoom();
+    getPoints(bounds, zoom);
+  }
+
+  render() {
+    const {children} = this.props;
+    return (
+      <div className="container-fluid">
+        <button onClick={this.getCurrentPositionClick}>Get Current Position</button>
+        <button onClick={this.getPoints}>Get Points</button>
+        <Header/>
+        {children}
+      </div>
+    );
   }
 }
 
 export default connect(
-  ({error, data}) => ({
-    error,
-    loading: error === null && data === null
-  }),
+  state => ({}),
   dispatch => ({
     actions: bindActionCreators(actions, dispatch)
   })

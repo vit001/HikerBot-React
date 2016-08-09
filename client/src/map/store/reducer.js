@@ -2,8 +2,13 @@ const initialState = {
   coords: {
     lat: 51.5258541,
     lng: -0.08040660000006028
+  },
+  geoJson: {
+    "type": "FeatureCollection",
+    "features": []
   }
 };
+
 
 function reducer(state = initialState, {type, payload}) {
   switch (type) {
