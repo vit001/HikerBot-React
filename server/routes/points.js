@@ -1,8 +1,8 @@
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 
-const thrift = require('thrift');
-const DataStore = require('./gen-nodejs/DataStore');
+const thrift     = require('thrift');
+const DataStore  = require('./gen-nodejs/DataStore');
 
 /* GET all selectors */
 router.get('/', (req, res, next) => {
@@ -11,7 +11,14 @@ router.get('/', (req, res, next) => {
   });
   connection.on('connect', () => {
     const client = thrift.createClient(DataStore, connection);
-    client.getAllPointsInBounds(4, -90000000, -180000000, 90000000, 180000000, (err, response) => {
+
+    var swlate6 = req.body.swlate6;
+    var swlone6 = req.body.swlone6;
+    var nelate6 = req.body.nelate6;
+    var nelone6 = req.body.nelone6;
+
+    
+    client.getAllPointsInBounds(4, swlate6, swlone6, nelate6, nelone6, (err, response) => {
       if (err) {
         res.send('getAllPointsInBounds error:', err);
       } else {
