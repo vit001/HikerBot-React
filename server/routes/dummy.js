@@ -61,6 +61,34 @@ const dummyJson = {
           ]
         ]
       }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "town",
+        "name": "blah"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -107.57812499999999,
+          47.040182144806664
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "type": "town",
+        "name": "a very long name indeed"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -87.890625,
+          39.095962936305476
+        ]
+      }
     }
   ]
 };
