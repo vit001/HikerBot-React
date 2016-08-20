@@ -65,6 +65,7 @@ const dummyJson = {
     {
       "type": "Feature",
       "properties": {
+        "id": 1,
         "type": "town",
         "name": "blah"
       },
@@ -79,6 +80,7 @@ const dummyJson = {
     {
       "type": "Feature",
       "properties": {
+        "id": 2,
         "type": "town",
         "name": "a very long name indeed"
       },

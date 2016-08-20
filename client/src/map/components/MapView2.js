@@ -37,19 +37,20 @@ class MapView extends Component {
     }
 
     renderFeature(feature) {
-        const {properties: {type, name}, geometry: {coordinates: [lat, lng]}} = feature;
+        const {properties: {id, type, name}, geometry: {coordinates: [lng, lat]}} = feature;
         if (type !== 'town') {
             return '';
         }
 
-        return <TownMarker name={name} lat={lat} lng={lng}/>
+        return <TownMarker key={id} name={name} lat={lat} lng={lng}/>
     }
 
-    componentWillReceiveProps({geoJson}) {
-        if (this.map) {
-            this.map.data.addGeoJson(geoJson);
-        }
-    }
+    //disable auto-loading of geoJson
+    // componentWillReceiveProps({geoJson}) {
+    //     if (this.map) {
+    //         this.map.data.addGeoJson(geoJson);
+    //     }
+    // }
 
     render() {
         const {center, geoJson: {features}, zoom} = this.props;
