@@ -8,7 +8,7 @@ export function getCurrentPosition() {
 
 export function getPoints(bounds = 'asd', zoom = 12) {
   const body = JSON.stringify({bounds, zoom});
-  return fetch('/server/dummy/getPoints', {
+  return fetch('/server/points/getPoints', {
     method: 'POST',
     headers: {
       Accept: 'application/json',

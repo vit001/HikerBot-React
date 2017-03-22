@@ -23,7 +23,14 @@ class MapView extends Component {
     onMapCreated(map) {
         this.map = map;
         map.setOptions({
-            disableDefaultUI: true
+            disableDefaultUI: true,
+            panControl:true,
+            zoomControl:true,
+            mapTypeControl:true,
+            scaleControl:true,
+            streetViewControl:true,
+            overviewMapControl:true,
+            rotateControl:true
         });
     }
 
