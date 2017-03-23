@@ -77,8 +77,8 @@ class MapView extends Component {
         return (
             <div className="map">
                 <Gmaps
-                    width={'800px'}
-                    height={'600px'}
+                    width={'100vw'}
+                    height={'100vh'}
                     lat={lat}
                     lng={lng}
                     zoom={zoom}
