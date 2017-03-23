@@ -48,10 +48,10 @@
     "whatwg-fetch": "1.0.0"
   },
   "dependencies": {
-    "google-map-react": "^0.16.3",
     "react": "^15.2.1",
     "react-dom": "^15.2.1",
-    "react-gmaps": "^1.5.0",
+    "react-gmaps": "https://github.com/tristandb/react-gmaps/tarball/master",
+    "react-google-maps": "^6.0.1",
     "react-redux": "^4.4.5",
     "react-router": "^2.6.1",
     "redux": "^3.5.2",

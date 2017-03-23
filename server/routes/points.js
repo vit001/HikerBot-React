@@ -136,13 +136,14 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
                             "properties": {
                                 "id": i,
                                 "type": "point",
-                                "name": p.name
+                                "name": p.name,
+                                "description": p.description
                             },
                             "geometry": {
                                 "type": "Point",
                                 "coordinates": [
-                                    p.lone6*1e-6,
-                                    p.late6*1e-6
+                                    p.late6*1e-6,
+                                    p.lone6*1e-6
                                 ]
                             }};
                     features.push(feature);
@@ -168,9 +169,6 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
         res.status(200).send(`connection error ${err}`);
     });
 
-
-    //console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
-    //res.status(200).send(dummyJson);
 });
 
 module.exports = router;

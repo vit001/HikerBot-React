@@ -2,25 +2,11 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import * as actions from '../store/actions'
-import GoogleMap from 'google-map-react';
+
+import GoogleMap from 'react-google-maps';
+import Marker from 'react-google-maps';
+
 import './MapView2.css';
-
-// React Stateless Component ("dumb component")
-const TownMarker = ({name}) => {
-    return (
-        <div className="town">
-            {name}
-        </div>
-    )
-};
-
-const PointMarker = ({name}) => {
-    return (
-        <div className="point">
-            {name}
-        </div>
-    )
-};
 
 class MapView extends Component {
     constructor(props) {
@@ -45,13 +31,13 @@ class MapView extends Component {
     }
 
     renderFeature(feature) {
-        const {properties: {id, type, name}, geometry: {coordinates: [lng, lat]}} = feature;
-        if (type === 'town') {
-            return <TownMarker key={id} name={name} lat={lat} lng={lng}/>
+        const {properties: {id, type, name}, geometry: {coordinates: [lat, lng]}} = feature;
+        if ( type==='town' ) {
+            return <InfoWindow key={id} lat={lat} lng={lng} content={name}/>
         }
         else
-        if (type=== 'point') {
-            return <PointMarker key={id} name={name} lat={lat} lng={lng}/>
+        if ( type==='point' ) {
+            return <Marker key={id} lat={lat} lng={lng} draggable={false} icon="http://api.hikerbot.com/mdpi/accommodation_alpinehut_small.png"/>
         }
         else {
             return '';
@@ -74,9 +60,19 @@ class MapView extends Component {
                     center={center}
                     defaultZoom={this.defaultZoom}
                     zoom={zoom}
-                    onChange={this.onChange}
-                    onGoogleApiLoaded={this.onGoogleApiLoaded}
-                    yesIWantToUseGoogleMapApiInternals/>
+
+                    containerElement={
+                        <div style={{ height: `100%` }} />
+                    }
+                    mapElement={
+                        <div style={{ height: `100%` }} />
+                    }
+                    onMapLoad={_.noop}
+                    onMapClick={_.noop}
+                    markers={markers}
+                    onMarkerRightClick={_.noop}
+                />,
+
                 {features.map(this.renderFeature)}
             </div>
         );

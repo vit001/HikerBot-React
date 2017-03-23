@@ -28,7 +28,7 @@ class Root extends Component {
         <button onClick={this.getCurrentPositionClick}>Get Current Position</button>
         <button onClick={this.getPoints}>Get Points</button>
         <Header/>
-        {children}
+          {children}
       </div>
     );
   }
