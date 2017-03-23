@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import * as actions from '../store/actions'
-import {Gmaps, Marker, Circle, Polygon, Polyline, InfoWindow} from 'react-gmaps'
+import {Gmaps, Marker, InfoWindow} from 'react-gmaps';
 import './MapView.css';
 
 class MapView extends Component {
@@ -18,20 +18,9 @@ class MapView extends Component {
         const center = this.map.getCenter().toJSON();
         const zoom = this.map.getZoom();
         setBounds(bounds, center, zoom);
-
-        this.renderPolyline();
-    }
-
-    getInitialState() {
-        return {
-            mapCreated: false,
-        };
     }
 
     onMapCreated(map) {
-
-        this.setState({ map: map, mapCreated: true });
-
         this.map = map;
         map.setOptions({
             disableDefaultUI: true,
@@ -44,6 +33,7 @@ class MapView extends Component {
             rotateControl:true
         });
 
+        //this.markerClusterer = new MarkerClusterer(map);
     }
 
     //disable auto-loading of geoJson
@@ -53,7 +43,6 @@ class MapView extends Component {
 
     renderFeature(feature) {
         const {properties: {id, type, name}, geometry: {coordinates: [lat, lng]}} = feature;
-
         if ( type==='town' ) {
             return <InfoWindow key={id} lat={lat} lng={lng} content={name}/>
         }
@@ -80,23 +69,8 @@ class MapView extends Component {
                     params={{v: '3.exp'}}
                     onIdle={this.onIdle}
                     onMapCreated={this.onMapCreated}>
-
                     {features.map(this.renderFeature)}
-
-                    <Polyline
-                        path={[
-                            {lat: 25.774, lng: -80.190},
-                            {lat: 18.466, lng: -66.118},
-                            {lat: 32.321, lng: -64.757}
-                        ]}
-                        geodesic="true"
-                        strokeColor="#FF0000"
-                        strokeOpacity="0.5"
-                        strokeWeight="4"
-                    />
-
                 </Gmaps>
-
             </div>
         );
     }
