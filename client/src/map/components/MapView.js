@@ -32,6 +32,8 @@ class MapView extends Component {
             overviewMapControl:true,
             rotateControl:true
         });
+
+        //this.markerClusterer = new MarkerClusterer(map);
     }
 
     //disable auto-loading of geoJson
@@ -80,7 +82,7 @@ class MapView extends Component {
                     lat={lat}
                     lng={lng}
                     zoom={zoom}
-                    loadingMessage={'Be happy'}
+                    loadingMessage={'Loading ...'}
                     params={{v: '3.exp'}}
                     onIdle={this.onIdle}
                     onMapCreated={this.onMapCreated}>
