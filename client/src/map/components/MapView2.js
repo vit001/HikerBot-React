@@ -46,11 +46,11 @@ class MapView extends Component {
 
     renderFeature(feature) {
         const {properties: {id, type, name}, geometry: {coordinates: [lng, lat]}} = feature;
-        if (type == 'town') {
+        if (type === 'town') {
             return <TownMarker key={id} name={name} lat={lat} lng={lng}/>
         }
         else
-        if (type=='point') {
+        if (type=== 'point') {
             return <PointMarker key={id} name={name} lat={lat} lng={lng}/>
         }
         else {

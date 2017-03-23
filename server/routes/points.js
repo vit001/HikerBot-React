@@ -135,7 +135,7 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
                             "type": "Feature",
                             "properties": {
                                 "id": i,
-                                "type": "town",
+                                "type": "point",
                                 "name": p.name
                             },
                             "geometry": {

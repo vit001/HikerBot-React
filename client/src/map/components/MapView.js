@@ -46,7 +46,7 @@ class MapView extends Component {
         }
         else
         if ( type==='point' ) {
-            return <Marker key={id} lat={lat} lng={lng} content={name} draggable={false}/>
+            return <Marker key={id} lat={lat} lng={lng} content={name} draggable={false} icon="http://api.hikerbot.com/mdpi/accommodation_alpinehut_small.png"/>
         }
         else {
             return '';
