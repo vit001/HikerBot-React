@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import * as actions from '../store/actions'
-import {Gmaps, InfoWindow} from 'react-gmaps';
+import {Gmaps, Marker, InfoWindow} from 'react-gmaps';
 import './MapView.css';
 
 class MapView extends Component {
@@ -41,13 +41,34 @@ class MapView extends Component {
 
     renderFeature(feature) {
         const {properties: {id, type, name}, geometry: {coordinates: [lng, lat]}} = feature;
-        if (type !== 'town') {
+        if ( type==='town' ) {
+            return <InfoWindow key={id} lat={lat} lng={lng} content={name}/>
+        }
+        else
+        if ( type==='point' ) {
+            return <Marker key={id} lat={lat} lng={lng} content={name} draggable={false}/>
+        }
+        else {
             return '';
         }
 
-        return <InfoWindow key={id} lat={lat} lng={lng} content={name}/>
-    }
 
+    }
+/*
+    renderFeature(feature) {
+        const {properties: {id, type, name}, geometry: {coordinates: [lng, lat]}} = feature;
+        if (type == 'town') {
+            return <InfoWindow key={id} lat={lat} lng={lng} content={name}/>
+        }
+        else
+        if (type=='point') {
+            return <Marker key={id} name={name} lat={lat} lng={lng}/>
+        }
+        else {
+            return '';
+        }
+    }
+*/
     //,
     render() {
         const {center: {lat, lng}, zoom, geoJson: {features}} = this.props;

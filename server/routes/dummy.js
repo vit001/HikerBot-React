@@ -4,40 +4,67 @@ const router = express.Router();
 const dummyJson = {
   "type": "FeatureCollection",
   "features": [
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -42.5390625,
-          78.97138592818217
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -34.1015625,
-          75.58493740869223
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -37.96875,
-          71.18775391813158
-        ]
-      }
-    },
-    {
+      {
+          "type": "Feature",
+          "properties": {
+            "id": 1,
+            "type": "town",
+            "name": "Some Town 1"
+          },
+          "geometry": {
+              "type": "Point",
+                "coordinates": [
+                    -100.5390625,
+                    48.97138592818217
+                ]
+            }
+      },
+      {
+          "type": "Feature",
+          "properties": {
+              "id": 2,
+              "type": "town",
+              "name": "Some Town 2"
+          },
+          "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  -87.890625,
+                  39.095962936305476
+              ]
+          }
+      },
+      {
+          "type": "Feature",
+          "properties": {
+              "id": 3,
+              "type": "town",
+              "name": "Some Town 3"
+          },
+          "geometry": {
+              "type": "Point",
+              "coordinates": [
+                  -100.890625,
+                  35.095962936305476
+              ]
+          }
+      },
+      {
+          "type": "Feature",
+          "properties": {
+              "id": 4,
+              "type": "point",
+              "name": "Some Point 1"
+          },
+          "geometry": {
+            "type": "Point",
+            "coordinates": [
+            -90.1015625,
+            42.58493740869223
+            ]
+        }
+      },
+      {
       "type": "Feature",
       "properties": {},
       "geometry": {
@@ -59,36 +86,6 @@ const dummyJson = {
             -46.7578125,
             66.79190947341796
           ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": 1,
-        "type": "town",
-        "name": "blah"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -107.57812499999999,
-          47.040182144806664
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "id": 2,
-        "type": "town",
-        "name": "a very long name indeed"
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [
-          -87.890625,
-          39.095962936305476
         ]
       }
     }

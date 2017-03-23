@@ -5,10 +5,18 @@ import * as actions from '../store/actions'
 import GoogleMap from 'google-map-react';
 import './MapView2.css';
 
-//React Stateless Component ("dumb component")
+// React Stateless Component ("dumb component")
 const TownMarker = ({name}) => {
     return (
         <div className="town">
+            {name}
+        </div>
+    )
+};
+
+const PointMarker = ({name}) => {
+    return (
+        <div className="point">
             {name}
         </div>
     )
@@ -38,11 +46,16 @@ class MapView extends Component {
 
     renderFeature(feature) {
         const {properties: {id, type, name}, geometry: {coordinates: [lng, lat]}} = feature;
-        if (type !== 'town') {
+        if (type == 'town') {
+            return <TownMarker key={id} name={name} lat={lat} lng={lng}/>
+        }
+        else
+        if (type=='point') {
+            return <PointMarker key={id} name={name} lat={lat} lng={lng}/>
+        }
+        else {
             return '';
         }
-
-        return <TownMarker key={id} name={name} lat={lat} lng={lng}/>
     }
 
     //disable auto-loading of geoJson

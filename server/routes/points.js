@@ -122,11 +122,12 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
             var len2 = response.length;
             console.log(`getPoints was called, received response len=${len2} data=${response}`);
 
+            // Just show 50 points max
             if (err) {
                 res.send('getAllPointsInBounds error:', err);
             } else {
                 var features = [];
-                for (var i = 0; i < 1+0*len2; i++) {
+                for (var i = 0; i < 50+0*len2; i++) {
                     var p = response[i];
 
                     var feature=
@@ -140,8 +141,8 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
                             "geometry": {
                                 "type": "Point",
                                 "coordinates": [
-                                    p.late6*1e-6,
-                                    p.lone6*1e-6
+                                    p.lone6*1e-6,
+                                    p.late6*1e-6
                                 ]
                             }};
                     features.push(feature);
