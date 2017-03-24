@@ -4767,6 +4767,7 @@ var Marker = module.exports.Marker = function(args) {
   this.zlfo = null;
   this.name = null;
   this.description = null;
+  this.iconFileName = null;
   this.late6 = null;
   this.lone6 = null;
   this.eleme2 = null;
@@ -4790,6 +4791,9 @@ var Marker = module.exports.Marker = function(args) {
     }
     if (args.description !== undefined && args.description !== null) {
       this.description = args.description;
+    }
+    if (args.iconFileName !== undefined && args.iconFileName !== null) {
+      this.iconFileName = args.iconFileName;
     }
     if (args.late6 !== undefined && args.late6 !== null) {
       this.late6 = args.late6;
@@ -4865,27 +4869,34 @@ Marker.prototype.read = function(input) {
       }
       break;
       case 7:
-      if (ftype == Thrift.Type.I32) {
-        this.late6 = input.readI32();
+      if (ftype == Thrift.Type.STRING) {
+        this.iconFileName = input.readString();
       } else {
         input.skip(ftype);
       }
       break;
       case 8:
       if (ftype == Thrift.Type.I32) {
-        this.lone6 = input.readI32();
+        this.late6 = input.readI32();
       } else {
         input.skip(ftype);
       }
       break;
       case 9:
       if (ftype == Thrift.Type.I32) {
-        this.eleme2 = input.readI32();
+        this.lone6 = input.readI32();
       } else {
         input.skip(ftype);
       }
       break;
       case 10:
+      if (ftype == Thrift.Type.I32) {
+        this.eleme2 = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 11:
       if (ftype == Thrift.Type.SET) {
         var _size260 = 0;
         var _rtmp3264;
@@ -4906,7 +4917,7 @@ Marker.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
-      case 11:
+      case 12:
       if (ftype == Thrift.Type.SET) {
         var _size267 = 0;
         var _rtmp3271;
@@ -4968,23 +4979,28 @@ Marker.prototype.write = function(output) {
     output.writeString(this.description);
     output.writeFieldEnd();
   }
+  if (this.iconFileName !== null && this.iconFileName !== undefined) {
+    output.writeFieldBegin('iconFileName', Thrift.Type.STRING, 7);
+    output.writeString(this.iconFileName);
+    output.writeFieldEnd();
+  }
   if (this.late6 !== null && this.late6 !== undefined) {
-    output.writeFieldBegin('late6', Thrift.Type.I32, 7);
+    output.writeFieldBegin('late6', Thrift.Type.I32, 8);
     output.writeI32(this.late6);
     output.writeFieldEnd();
   }
   if (this.lone6 !== null && this.lone6 !== undefined) {
-    output.writeFieldBegin('lone6', Thrift.Type.I32, 8);
+    output.writeFieldBegin('lone6', Thrift.Type.I32, 9);
     output.writeI32(this.lone6);
     output.writeFieldEnd();
   }
   if (this.eleme2 !== null && this.eleme2 !== undefined) {
-    output.writeFieldBegin('eleme2', Thrift.Type.I32, 9);
+    output.writeFieldBegin('eleme2', Thrift.Type.I32, 10);
     output.writeI32(this.eleme2);
     output.writeFieldEnd();
   }
   if (this.tags !== null && this.tags !== undefined) {
-    output.writeFieldBegin('tags', Thrift.Type.SET, 10);
+    output.writeFieldBegin('tags', Thrift.Type.SET, 11);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
     for (var iter274 in this.tags)
     {
@@ -4998,7 +5014,7 @@ Marker.prototype.write = function(output) {
     output.writeFieldEnd();
   }
   if (this.mileages !== null && this.mileages !== undefined) {
-    output.writeFieldBegin('mileages', Thrift.Type.SET, 11);
+    output.writeFieldBegin('mileages', Thrift.Type.SET, 12);
     output.writeSetBegin(Thrift.Type.STRUCT, this.mileages.length);
     for (var iter275 in this.mileages)
     {
@@ -5009,6 +5025,521 @@ Marker.prototype.write = function(output) {
       }
     }
     output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var LatLng = module.exports.LatLng = function(args) {
+  this.late6 = null;
+  this.lone6 = null;
+  if (args) {
+    if (args.late6 !== undefined && args.late6 !== null) {
+      this.late6 = args.late6;
+    }
+    if (args.lone6 !== undefined && args.lone6 !== null) {
+      this.lone6 = args.lone6;
+    }
+  }
+};
+LatLng.prototype = {};
+LatLng.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I32) {
+        this.late6 = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I32) {
+        this.lone6 = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+LatLng.prototype.write = function(output) {
+  output.writeStructBegin('LatLng');
+  if (this.late6 !== null && this.late6 !== undefined) {
+    output.writeFieldBegin('late6', Thrift.Type.I32, 1);
+    output.writeI32(this.late6);
+    output.writeFieldEnd();
+  }
+  if (this.lone6 !== null && this.lone6 !== undefined) {
+    output.writeFieldBegin('lone6', Thrift.Type.I32, 2);
+    output.writeI32(this.lone6);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var Line = module.exports.Line = function(args) {
+  this.id = null;
+  this.version = null;
+  this.name = null;
+  this.description = null;
+  this.color = null;
+  this.latlngs = null;
+  this.tags = null;
+  this.resources = null;
+  this.selector_ids = null;
+  if (args) {
+    if (args.id !== undefined && args.id !== null) {
+      this.id = args.id;
+    }
+    if (args.version !== undefined && args.version !== null) {
+      this.version = args.version;
+    }
+    if (args.name !== undefined && args.name !== null) {
+      this.name = args.name;
+    }
+    if (args.description !== undefined && args.description !== null) {
+      this.description = args.description;
+    }
+    if (args.color !== undefined && args.color !== null) {
+      this.color = args.color;
+    }
+    if (args.latlngs !== undefined && args.latlngs !== null) {
+      this.latlngs = Thrift.copyList(args.latlngs, [ttypes.LatLng]);
+    }
+    if (args.tags !== undefined && args.tags !== null) {
+      this.tags = Thrift.copyList(args.tags, [ttypes.Tag]);
+    }
+    if (args.resources !== undefined && args.resources !== null) {
+      this.resources = Thrift.copyList(args.resources, [ttypes.Resource]);
+    }
+    if (args.selector_ids !== undefined && args.selector_ids !== null) {
+      this.selector_ids = Thrift.copyList(args.selector_ids, [null]);
+    }
+  }
+};
+Line.prototype = {};
+Line.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I64) {
+        this.id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I64) {
+        this.version = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.STRING) {
+        this.name = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 4:
+      if (ftype == Thrift.Type.STRING) {
+        this.description = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 5:
+      if (ftype == Thrift.Type.STRING) {
+        this.color = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 6:
+      if (ftype == Thrift.Type.LIST) {
+        var _size276 = 0;
+        var _rtmp3280;
+        this.latlngs = [];
+        var _etype279 = 0;
+        _rtmp3280 = input.readListBegin();
+        _etype279 = _rtmp3280.etype;
+        _size276 = _rtmp3280.size;
+        for (var _i281 = 0; _i281 < _size276; ++_i281)
+        {
+          var elem282 = null;
+          elem282 = new ttypes.LatLng();
+          elem282.read(input);
+          this.latlngs.push(elem282);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 7:
+      if (ftype == Thrift.Type.SET) {
+        var _size283 = 0;
+        var _rtmp3287;
+        this.tags = [];
+        var _etype286 = 0;
+        _rtmp3287 = input.readSetBegin();
+        _etype286 = _rtmp3287.etype;
+        _size283 = _rtmp3287.size;
+        for (var _i288 = 0; _i288 < _size283; ++_i288)
+        {
+          var elem289 = null;
+          elem289 = new ttypes.Tag();
+          elem289.read(input);
+          this.tags.push(elem289);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 8:
+      if (ftype == Thrift.Type.SET) {
+        var _size290 = 0;
+        var _rtmp3294;
+        this.resources = [];
+        var _etype293 = 0;
+        _rtmp3294 = input.readSetBegin();
+        _etype293 = _rtmp3294.etype;
+        _size290 = _rtmp3294.size;
+        for (var _i295 = 0; _i295 < _size290; ++_i295)
+        {
+          var elem296 = null;
+          elem296 = new ttypes.Resource();
+          elem296.read(input);
+          this.resources.push(elem296);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 9:
+      if (ftype == Thrift.Type.SET) {
+        var _size297 = 0;
+        var _rtmp3301;
+        this.selector_ids = [];
+        var _etype300 = 0;
+        _rtmp3301 = input.readSetBegin();
+        _etype300 = _rtmp3301.etype;
+        _size297 = _rtmp3301.size;
+        for (var _i302 = 0; _i302 < _size297; ++_i302)
+        {
+          var elem303 = null;
+          elem303 = input.readI64();
+          this.selector_ids.push(elem303);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Line.prototype.write = function(output) {
+  output.writeStructBegin('Line');
+  if (this.id !== null && this.id !== undefined) {
+    output.writeFieldBegin('id', Thrift.Type.I64, 1);
+    output.writeI64(this.id);
+    output.writeFieldEnd();
+  }
+  if (this.version !== null && this.version !== undefined) {
+    output.writeFieldBegin('version', Thrift.Type.I64, 2);
+    output.writeI64(this.version);
+    output.writeFieldEnd();
+  }
+  if (this.name !== null && this.name !== undefined) {
+    output.writeFieldBegin('name', Thrift.Type.STRING, 3);
+    output.writeString(this.name);
+    output.writeFieldEnd();
+  }
+  if (this.description !== null && this.description !== undefined) {
+    output.writeFieldBegin('description', Thrift.Type.STRING, 4);
+    output.writeString(this.description);
+    output.writeFieldEnd();
+  }
+  if (this.color !== null && this.color !== undefined) {
+    output.writeFieldBegin('color', Thrift.Type.STRING, 5);
+    output.writeString(this.color);
+    output.writeFieldEnd();
+  }
+  if (this.latlngs !== null && this.latlngs !== undefined) {
+    output.writeFieldBegin('latlngs', Thrift.Type.LIST, 6);
+    output.writeListBegin(Thrift.Type.STRUCT, this.latlngs.length);
+    for (var iter304 in this.latlngs)
+    {
+      if (this.latlngs.hasOwnProperty(iter304))
+      {
+        iter304 = this.latlngs[iter304];
+        iter304.write(output);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  if (this.tags !== null && this.tags !== undefined) {
+    output.writeFieldBegin('tags', Thrift.Type.SET, 7);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
+    for (var iter305 in this.tags)
+    {
+      if (this.tags.hasOwnProperty(iter305))
+      {
+        iter305 = this.tags[iter305];
+        iter305.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.resources !== null && this.resources !== undefined) {
+    output.writeFieldBegin('resources', Thrift.Type.SET, 8);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
+    for (var iter306 in this.resources)
+    {
+      if (this.resources.hasOwnProperty(iter306))
+      {
+        iter306 = this.resources[iter306];
+        iter306.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.selector_ids !== null && this.selector_ids !== undefined) {
+    output.writeFieldBegin('selector_ids', Thrift.Type.SET, 9);
+    output.writeSetBegin(Thrift.Type.I64, this.selector_ids.length);
+    for (var iter307 in this.selector_ids)
+    {
+      if (this.selector_ids.hasOwnProperty(iter307))
+      {
+        iter307 = this.selector_ids[iter307];
+        output.writeI64(iter307);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var WebMapObject = module.exports.WebMapObject = function(args) {
+  this.marker = null;
+  this.line = null;
+  if (args) {
+    if (args.marker !== undefined && args.marker !== null) {
+      this.marker = new ttypes.Marker(args.marker);
+    }
+    if (args.line !== undefined && args.line !== null) {
+      this.line = new ttypes.Line(args.line);
+    }
+  }
+};
+WebMapObject.prototype = {};
+WebMapObject.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.marker = new ttypes.Marker();
+        this.marker.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.line = new ttypes.Line();
+        this.line.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+WebMapObject.prototype.write = function(output) {
+  output.writeStructBegin('WebMapObject');
+  if (this.marker !== null && this.marker !== undefined) {
+    output.writeFieldBegin('marker', Thrift.Type.STRUCT, 1);
+    this.marker.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.line !== null && this.line !== undefined) {
+    output.writeFieldBegin('line', Thrift.Type.STRUCT, 2);
+    this.line.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var WebMapResponse = module.exports.WebMapResponse = function(args) {
+  this.markers = null;
+  this.lines = null;
+  if (args) {
+    if (args.markers !== undefined && args.markers !== null) {
+      this.markers = Thrift.copyList(args.markers, [ttypes.Marker]);
+    }
+    if (args.lines !== undefined && args.lines !== null) {
+      this.lines = Thrift.copyList(args.lines, [ttypes.Line]);
+    }
+  }
+};
+WebMapResponse.prototype = {};
+WebMapResponse.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.LIST) {
+        var _size308 = 0;
+        var _rtmp3312;
+        this.markers = [];
+        var _etype311 = 0;
+        _rtmp3312 = input.readListBegin();
+        _etype311 = _rtmp3312.etype;
+        _size308 = _rtmp3312.size;
+        for (var _i313 = 0; _i313 < _size308; ++_i313)
+        {
+          var elem314 = null;
+          elem314 = new ttypes.Marker();
+          elem314.read(input);
+          this.markers.push(elem314);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.LIST) {
+        var _size315 = 0;
+        var _rtmp3319;
+        this.lines = [];
+        var _etype318 = 0;
+        _rtmp3319 = input.readListBegin();
+        _etype318 = _rtmp3319.etype;
+        _size315 = _rtmp3319.size;
+        for (var _i320 = 0; _i320 < _size315; ++_i320)
+        {
+          var elem321 = null;
+          elem321 = new ttypes.Line();
+          elem321.read(input);
+          this.lines.push(elem321);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+WebMapResponse.prototype.write = function(output) {
+  output.writeStructBegin('WebMapResponse');
+  if (this.markers !== null && this.markers !== undefined) {
+    output.writeFieldBegin('markers', Thrift.Type.LIST, 1);
+    output.writeListBegin(Thrift.Type.STRUCT, this.markers.length);
+    for (var iter322 in this.markers)
+    {
+      if (this.markers.hasOwnProperty(iter322))
+      {
+        iter322 = this.markers[iter322];
+        iter322.write(output);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  if (this.lines !== null && this.lines !== undefined) {
+    output.writeFieldBegin('lines', Thrift.Type.LIST, 2);
+    output.writeListBegin(Thrift.Type.STRUCT, this.lines.length);
+    for (var iter323 in this.lines)
+    {
+      if (this.lines.hasOwnProperty(iter323))
+      {
+        iter323 = this.lines[iter323];
+        iter323.write(output);
+      }
+    }
+    output.writeListEnd();
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -5206,19 +5737,19 @@ ReportableAttribute.prototype.read = function(input) {
       break;
       case 5:
       if (ftype == Thrift.Type.LIST) {
-        var _size276 = 0;
-        var _rtmp3280;
+        var _size324 = 0;
+        var _rtmp3328;
         this.pickableOptions = [];
-        var _etype279 = 0;
-        _rtmp3280 = input.readListBegin();
-        _etype279 = _rtmp3280.etype;
-        _size276 = _rtmp3280.size;
-        for (var _i281 = 0; _i281 < _size276; ++_i281)
+        var _etype327 = 0;
+        _rtmp3328 = input.readListBegin();
+        _etype327 = _rtmp3328.etype;
+        _size324 = _rtmp3328.size;
+        for (var _i329 = 0; _i329 < _size324; ++_i329)
         {
-          var elem282 = null;
-          elem282 = new ttypes.PickableOption();
-          elem282.read(input);
-          this.pickableOptions.push(elem282);
+          var elem330 = null;
+          elem330 = new ttypes.PickableOption();
+          elem330.read(input);
+          this.pickableOptions.push(elem330);
         }
         input.readListEnd();
       } else {
@@ -5234,19 +5765,19 @@ ReportableAttribute.prototype.read = function(input) {
       break;
       case 7:
       if (ftype == Thrift.Type.LIST) {
-        var _size283 = 0;
-        var _rtmp3287;
+        var _size331 = 0;
+        var _rtmp3335;
         this.applicableTags = [];
-        var _etype286 = 0;
-        _rtmp3287 = input.readListBegin();
-        _etype286 = _rtmp3287.etype;
-        _size283 = _rtmp3287.size;
-        for (var _i288 = 0; _i288 < _size283; ++_i288)
+        var _etype334 = 0;
+        _rtmp3335 = input.readListBegin();
+        _etype334 = _rtmp3335.etype;
+        _size331 = _rtmp3335.size;
+        for (var _i336 = 0; _i336 < _size331; ++_i336)
         {
-          var elem289 = null;
-          elem289 = new ttypes.Tag();
-          elem289.read(input);
-          this.applicableTags.push(elem289);
+          var elem337 = null;
+          elem337 = new ttypes.Tag();
+          elem337.read(input);
+          this.applicableTags.push(elem337);
         }
         input.readListEnd();
       } else {
@@ -5287,12 +5818,12 @@ ReportableAttribute.prototype.write = function(output) {
   if (this.pickableOptions !== null && this.pickableOptions !== undefined) {
     output.writeFieldBegin('pickableOptions', Thrift.Type.LIST, 5);
     output.writeListBegin(Thrift.Type.STRUCT, this.pickableOptions.length);
-    for (var iter290 in this.pickableOptions)
+    for (var iter338 in this.pickableOptions)
     {
-      if (this.pickableOptions.hasOwnProperty(iter290))
+      if (this.pickableOptions.hasOwnProperty(iter338))
       {
-        iter290 = this.pickableOptions[iter290];
-        iter290.write(output);
+        iter338 = this.pickableOptions[iter338];
+        iter338.write(output);
       }
     }
     output.writeListEnd();
@@ -5306,12 +5837,12 @@ ReportableAttribute.prototype.write = function(output) {
   if (this.applicableTags !== null && this.applicableTags !== undefined) {
     output.writeFieldBegin('applicableTags', Thrift.Type.LIST, 7);
     output.writeListBegin(Thrift.Type.STRUCT, this.applicableTags.length);
-    for (var iter291 in this.applicableTags)
+    for (var iter339 in this.applicableTags)
     {
-      if (this.applicableTags.hasOwnProperty(iter291))
+      if (this.applicableTags.hasOwnProperty(iter339))
       {
-        iter291 = this.applicableTags[iter291];
-        iter291.write(output);
+        iter339 = this.applicableTags[iter339];
+        iter339.write(output);
       }
     }
     output.writeListEnd();

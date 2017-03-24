@@ -5,6 +5,9 @@ import * as actions from '../store/actions'
 import {Gmaps, Marker, Polyline, InfoWindow} from 'react-gmaps'
 import './MapView.css';
 
+const params = {v: '3.exp' };
+//const params = {v: '3.exp', key: '<My Key Here />'};
+
 class MapView extends Component {
     constructor(props) {
         super(props);
@@ -21,28 +24,21 @@ class MapView extends Component {
         const center = this.map.getCenter().toJSON();
         const zoom = this.map.getZoom();
         setBounds(bounds, center, zoom);
-
-        console.log(`idle, setting bounds to ${bounds}`);
-        this.getPointsOnIdle();
-    }
-
-    doOnBoundsChanged() {
-        console.log(`doOnBoundsChanged`);
-
-        const {bounds, zoom, actions: {getPoints}} = this.props;
-        getPoints(bounds, zoom);
     }
 
     getInitialState() {
         return {
             mapCreated: false,
+
+            infoWindowMarkerOpen: false,
+            infoWindowMarkerId: 0, // ID of marker which has an Info Window open
+            infoWindowMarkerLat: 0,
+            infoWindowMarkerLon: 0
         };
     }
 
     onMapCreated(map) {
-        console.log(`onMapCreated`);
-
-        this.setState({ map: map, mapCreated: true });
+        //this.setState({ map: map, mapCreated: true });
 
         this.map = map;
         map.setOptions({
@@ -55,13 +51,50 @@ class MapView extends Component {
             overviewMapControl:true,
             rotateControl:true
         });
-
     }
 
     //disable auto-loading of geoJson
-    // componentWillReceiveProps({geoJson}) {
+    //componentWillReceiveProps({geoJson}) {
     //     this.map.data.addGeoJson(geoJson);
-    // }
+    //}
+/*
+    openMarkerInfoWindow( id, lat, lng ) {
+        let isOpen = this.state.infoWindowMarkerOpen;
+        let mid = this.state.markerIDWithOpenInfoWindow;
+        if ( ! isOpen  ||  id != mid ) {
+            this.setState( {
+                infoWindowMarkerOpen: true,
+                infoWindowMarkerId:   id, // ID of marker which has an Info Window open
+                infoWindowMarkerLat:  lat,
+                infoWindowMarkerLon:  lng } );
+        }
+    }
+
+    closeMarkerInfoWindow( id ) {
+        this.setState( {
+            infoWindowMarkerOpen: false,
+            infoWindowMarkerId:   0,
+            infoWindowMarkerLat:  0,
+            infoWindowMarkerLon:  0 } );
+    }
+*/
+
+    // InfoWindows show above a marker when marker is clicked
+    renderInfoWindows() {
+        //if ( this.state.infoWindowMarkerOpen ) {
+        //}
+        /*
+            return (
+                <InfoWindow
+                    key={this.state.infoWindowMarkerId}
+                    lat={this.state.infoWindowMarkerLat}
+                    lng={this.state.infoWindowMarkerLon}
+                    onCloseClick={() => this.closeInfoWindow(this.state.infoWindowMarkerId)}
+                />
+            );
+        }
+        */
+    }
 
     renderFeature(feature) {
         const {properties: {id, type, name}, geometry: {coordinates: [lat, lng]}} = feature;
@@ -71,7 +104,7 @@ class MapView extends Component {
         }
         else
         if ( type==='point' ) {
-            return <Marker key={id} lat={lat} lng={lng} draggable={false} icon="http://api.hikerbot.com/mdpi/accommodation_alpinehut_small.png"/>
+            return <Marker key={id} lat={lat} lng={lng} draggable={false} icon="http://api.hikerbot.com/mdpi/accommodation_alpinehut_small.png" />
         }
         else
         if ( type==='line' ) {
@@ -101,21 +134,22 @@ class MapView extends Component {
 
     render() {
         const {center: {lat, lng}, zoom, geoJson: {features}} = this.props;
+
         return (
             <div className="map">
                 <Gmaps
                     width={'100%'}
                     height={'100%'}
-                    lat={lat}
-                    lng={lng}
-                    zoom={zoom}
+                    lat={32}
+                    lng={-110}
+                    zoom={4}
                     loadingMessage={'Loading ...'}
-                    params={{v: '3.exp'}}
+                    params={params}
                     onIdle={this.onIdle}
-                    onBoundsChaged={this.doOnBoundsChanged}
                     onMapCreated={this.onMapCreated}>
 
-                    {features.map(this.renderFeature)}
+                    { features.map(this.renderFeature) }
+                    { this.renderInfoWindows() }
 
                 </Gmaps>
 

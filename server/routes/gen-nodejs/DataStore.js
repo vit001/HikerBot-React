@@ -15,7 +15,7 @@ var Types_ttypes = require('./Types_types');
 var Authentication_ttypes = require('./Authentication_types');
 
 
-var ttypes = require('./DataStore_types');
+var ttypes = require('./Datastore_types');
 //HELPER FUNCTIONS AND STRUCTURES
 
 var DataStore_checkVersion_args = function(args) {
@@ -4799,7 +4799,7 @@ var DataStore_getAllObjectsInBounds_result = function(args) {
   }
   if (args) {
     if (args.success !== undefined && args.success !== null) {
-      this.success = Thrift.copyList(args.success, [Types_ttypes.Response]);
+      this.success = new Types_ttypes.WebMapResponse(args.success);
     }
     if (args.userException !== undefined && args.userException !== null) {
       this.userException = args.userException;
@@ -4827,22 +4827,9 @@ DataStore_getAllObjectsInBounds_result.prototype.read = function(input) {
     switch (fid)
     {
       case 0:
-      if (ftype == Thrift.Type.LIST) {
-        var _size96 = 0;
-        var _rtmp3100;
-        this.success = [];
-        var _etype99 = 0;
-        _rtmp3100 = input.readListBegin();
-        _etype99 = _rtmp3100.etype;
-        _size96 = _rtmp3100.size;
-        for (var _i101 = 0; _i101 < _size96; ++_i101)
-        {
-          var elem102 = null;
-          elem102 = new Types_ttypes.Response();
-          elem102.read(input);
-          this.success.push(elem102);
-        }
-        input.readListEnd();
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new Types_ttypes.WebMapResponse();
+        this.success.read(input);
       } else {
         input.skip(ftype);
       }
@@ -4883,17 +4870,8 @@ DataStore_getAllObjectsInBounds_result.prototype.read = function(input) {
 DataStore_getAllObjectsInBounds_result.prototype.write = function(output) {
   output.writeStructBegin('DataStore_getAllObjectsInBounds_result');
   if (this.success !== null && this.success !== undefined) {
-    output.writeFieldBegin('success', Thrift.Type.LIST, 0);
-    output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
-    for (var iter103 in this.success)
-    {
-      if (this.success.hasOwnProperty(iter103))
-      {
-        iter103 = this.success[iter103];
-        iter103.write(output);
-      }
-    }
-    output.writeListEnd();
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
     output.writeFieldEnd();
   }
   if (this.userException !== null && this.userException !== undefined) {
