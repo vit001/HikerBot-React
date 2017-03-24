@@ -48,6 +48,7 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
                                 "id": i,
                                 "type": "point",
                                 "name": marker.name,
+                                "iconFileName": marker.iconFileName,
                                 "description": marker.description
                             },
                             "geometry": {
@@ -58,6 +59,9 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
                                 ]
                             }
                         };
+
+                    console.log(`received point ${JSON.stringify(feature)}`);
+
                     features.push(feature);
                 }
                 for (let i = 0; i < response.lines.length; i++) {
