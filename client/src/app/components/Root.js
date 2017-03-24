@@ -25,8 +25,8 @@ class Root extends Component {
     const {children} = this.props;
     return (
       <div className="container-fluid">
-        <button onClick={this.getCurrentPositionClick}>Get Current Position</button>
-        <button onClick={this.getPoints}>Get Points</button>
+          <button onClick={this.getCurrentPositionClick}>Get Current Position</button>
+          <button onClick={this.getPoints}>Get Points</button>
         <Header/>
           {children}
       </div>

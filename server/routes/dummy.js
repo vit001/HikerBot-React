@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const dummyJson = {
+const dummyJsonPoints = {
   "type": "FeatureCollection",
   "features": [
       {
@@ -65,36 +65,68 @@ const dummyJson = {
         }
       },
       {
-      "type": "Feature",
-      "properties": {},
-      "geometry": {
-        "type": "LineString",
-        "coordinates": [
-          [
-            78.06198918665974,
-            -51.67968749999999
-          ],
-          [
-              74.68325030051861,
-              -48.515625
-          ],
-          [
-            70.25945200030638,
-            -48.515625
-          ],
-          [
-            66.79190947341796,
-            -46.7578125
-          ]
-        ]
+          "type": "Feature",
+          "properties": {
+              "id": 4,
+              "type": "line",
+              "name": "Some Line 1"
+          },
+          "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                  [
+                      25,
+                      -80
+                  ],
+                  [
+                      75,
+                      -48
+                  ],
+                  [
+                      70,
+                      -48
+                  ]
+              ]
       }
     }
   ]
 };
 
+const dummyJsonTracks = {
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+                "type": "LineString",
+                "coordinates": [
+                    [
+                        25,
+                        -80
+                    ],
+                    [
+                        75,
+                        -48
+                    ],
+                    [
+                        70,
+                        -48
+                    ]
+                ]
+            }
+        }
+    ]
+};
+
 router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
   console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
-  res.status(200).send(dummyJson);
+  res.status(200).send(dummyJsonPoints);
+});
+
+router.post('/getTracks', ({body: {bounds, zoom}}, res) => {
+    console.log(`getTracks was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
+    res.status(200).send(dummyJsonTracks);
 });
 
 module.exports = router;

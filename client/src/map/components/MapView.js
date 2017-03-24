@@ -61,6 +61,26 @@ class MapView extends Component {
         if ( type==='point' ) {
             return <Marker key={id} lat={lat} lng={lng} draggable={false} icon="http://api.hikerbot.com/mdpi/accommodation_alpinehut_small.png"/>
         }
+        else
+        if ( type==='line' ) {
+
+            var clist = feature.geometry.coordinates;
+            var pathlist = [];
+            for ( var i = 0; i < clist.length; ++i ) {
+                var item = {lat: clist[i][0], lng: clist[i][1]};
+                pathlist.push( item )
+            }
+            console.log(`got pathlist: ${pathlist}`);
+
+            return <Polyline
+                key={ id }
+                path={ pathlist }
+                geodesic="true"
+                strokeColor="#FF0000"
+                strokeOpacity="0.5"
+                strokeWeight="4"
+            />
+        }
         else {
             return '';
         }
@@ -82,18 +102,6 @@ class MapView extends Component {
                     onMapCreated={this.onMapCreated}>
 
                     {features.map(this.renderFeature)}
-
-                    <Polyline
-                        path={[
-                            {lat: 25.774, lng: -80.190},
-                            {lat: 18.466, lng: -66.118},
-                            {lat: 32.321, lng: -64.757}
-                        ]}
-                        geodesic="true"
-                        strokeColor="#FF0000"
-                        strokeOpacity="0.5"
-                        strokeWeight="4"
-                    />
 
                 </Gmaps>
 

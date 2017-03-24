@@ -104,7 +104,7 @@ const dummyJson = {
 router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
     console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
 
-    const connection = thrift.createConnection("api.hikerbot.com", 8082, {
+    const connection = thrift.createConnection("api.hikerbot.com", 8084, {
         transport: thrift.TFramedTransport
     });
     connection.on('connect', () => {
@@ -118,35 +118,68 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
 
         console.log(`grabbing from hamp server ${swlate6}, ${swlone6}, ${nelate6}, ${nelone6}, zoom: ${zoom}`);
 
-        client.getAllPointsInBounds(4, swlate6, swlone6, nelate6, nelone6, (err, response) => {
-            var len2 = response.length;
-            console.log(`getPoints was called, received response len=${len2} data=${response}`);
+        client.getAllObjectsInBounds(4, swlate6, swlone6, nelate6, nelone6, zoom, (err, response) => {
+
+            console.log(`getPoints was called, received response len=${response.length} data=${response}`);
 
             // Just show 50 points max
             if (err) {
                 res.send('getAllPointsInBounds error:', err);
             } else {
                 var features = [];
-                for (var i = 0; i < 50+0*len2; i++) {
-                    var p = response[i];
+                for (var i = 0; i < response.length; i++) {
+                    var resp = response[i];
+                    if ( resp.point ) {
+                        var feature =
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "id": i,
+                                    "type": "point",
+                                    "name": resp.point.name,
+                                    "description": resp.point.description
+                                },
+                                "geometry": {
+                                    "type": "Point",
+                                    "coordinates": [
+                                        resp.point.late6 * 1e-6,
+                                        resp.point.lone6 * 1e-6
+                                    ]
+                                }
+                            };
+                        features.push( feature );
+                    }
+                    else
+                    if ( resp.track ) {
+                        console.log(`i=${i} track=${resp.track}`);
 
-                    var feature=
-                        {
-                            "type": "Feature",
-                            "properties": {
-                                "id": i,
-                                "type": "point",
-                                "name": p.name,
-                                "description": p.description
-                            },
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": [
-                                    p.late6*1e-6,
-                                    p.lone6*1e-6
-                                ]
-                            }};
-                    features.push(feature);
+                        // Create an array of lat/longs defining this line
+                        var latlongs = [];
+                        for (var j = 0; j < resp.track.path.pathpoints.length; j++) {
+                            var pathpoint = resp.track.path.pathpoints[j];
+                            console.log(`pathpoint=${pathpoint}`);
+                            var latlong = [];
+                            latlong.push( pathpoint.late6 * 1e-6 );
+                            latlong.push( pathpoint.lone6 * 1e-6 );
+                            latlongs.push( latlong );
+                        }
+
+                        var feature =
+                            {
+                                "type": "Feature",
+                                "properties": {
+                                    "id": i,
+                                    "type": "line",
+                                    "name": resp.track.name,
+                                    "description": resp.track.description
+                                },
+                                "geometry": {
+                                    "type": "LineString",
+                                    "coordinates": latlongs
+                                }
+                            };
+                        features.push( feature );
+                    }
 
                     console.log(`i=${i} feature=${JSON.stringify(feature)}`);
                     //Do something
