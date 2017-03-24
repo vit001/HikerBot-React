@@ -57,7 +57,7 @@ class MapView extends Component {
     //componentWillReceiveProps({geoJson}) {
     //     this.map.data.addGeoJson(geoJson);
     //}
-/*
+
     openMarkerInfoWindow( id, lat, lng ) {
         let isOpen = this.state.infoWindowMarkerOpen;
         let mid = this.state.markerIDWithOpenInfoWindow;
@@ -69,7 +69,7 @@ class MapView extends Component {
                 infoWindowMarkerLon:  lng } );
         }
     }
-
+/*
     closeMarkerInfoWindow( id ) {
         this.setState( {
             infoWindowMarkerOpen: false,
@@ -81,9 +81,11 @@ class MapView extends Component {
 
     // InfoWindows show above a marker when marker is clicked
     renderInfoWindows() {
-        //if ( this.state.infoWindowMarkerOpen ) {
-        //}
         /*
+        if ( this.state.infoWindowMarkerOpen ) {
+            return null;
+        }
+        else {
             return (
                 <InfoWindow
                     key={this.state.infoWindowMarkerId}
@@ -106,7 +108,7 @@ class MapView extends Component {
         if ( type==='point' ) {
             let iconFileName = feature.properties.iconFileName;
             let fullPath = "http://api.hikerbot.com/mdpi/" + iconFileName + ".png";
-            return <Marker key={id} lat={lat} lng={lng} draggable={false} icon={fullPath} />
+            return <Marker key={id} lat={lat} lng={lng} draggable={false} icon={fullPath} onClick={() => this.openMarkerInfoWindow(id, lat, lng)} />
         }
         else
         if ( type==='line' ) {
