@@ -27,6 +27,12 @@ function reducer(state = initialState, {type, payload}) {
         ...state,
         geoJson: payload
       };
+    case 'GET_DETAIL_POINT_FULFILLED':
+       return {
+           ...state,
+            geoJson: payload
+       };
+
     case 'SET_BOUNDS':
       return {
         ...state,

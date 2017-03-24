@@ -119,14 +119,9 @@ const dummyJsonTracks = {
     ]
 };
 
-router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
+router.post('/getPointsAndTracks', ({body: {bounds, zoom}}, res) => {
   console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
   res.status(200).send(dummyJsonPoints);
-});
-
-router.post('/getTracks', ({body: {bounds, zoom}}, res) => {
-    console.log(`getTracks was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
-    res.status(200).send(dummyJsonTracks);
 });
 
 module.exports = router;

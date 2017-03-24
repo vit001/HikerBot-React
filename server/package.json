@@ -18,7 +18,7 @@
     "json-server": "^0.8.17",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.0",
-    "thrift": "^0.9.3"
+    "thrift": "^0.10.0"
   },
   "devDependencies": {
     "npm-run-all": "^2.3.0"

@@ -7,11 +7,12 @@ import * as actions from '../store/actions';
 class Root extends Component {
   constructor(props) {
     super(props);
-    this.getCurrentPositionClick = this.getCurrentPositionClick.bind(this);
-    this.getPoints = this.getPoints.bind(this);
+    this.getCurrentPosition = this.getCurrentPosition.bind(this);
+    this.getPoints          = this.getPoints.bind(this);
+    this.getDetailPoint     = this.getDetailPoint.bind(this);
   }
 
-  getCurrentPositionClick() {
+  getCurrentPosition() {
     const {actions: {getCurrentPosition}} = this.props;
     getCurrentPosition();
   }
@@ -21,12 +22,20 @@ class Root extends Component {
     getPoints(bounds, zoom);
   }
 
+  getDetailPoint() {
+      // For testing
+      let id      = 350;    // Campo Trading Post
+      let version = 0; // 0 = Latest Version
+      getDetailPoint(id, version);
+  }
+
   render() {
     const {children} = this.props;
     return (
       <div className="container-fluid">
-          <button onClick={this.getCurrentPositionClick}>Get Current Position</button>
+          <button onClick={this.getCurrentPosition}>Get Current Position</button>
           <button onClick={this.getPoints}>Get Points</button>
+          <button onClick={this.getDetailPoint}>Get Point Detail</button>
         <Header/>
           {children}
       </div>

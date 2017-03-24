@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 
 const routes = require('./routes/index');
 const selectors = require('./routes/selectors');
-const points = require('./routes/points');
+const points = require('./routes/points_and_tracks');
 const dummy = require('./routes/dummy');
 
 const app = express();
