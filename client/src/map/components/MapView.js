@@ -104,7 +104,9 @@ class MapView extends Component {
         }
         else
         if ( type==='point' ) {
-            return <Marker key={id} lat={lat} lng={lng} draggable={false} icon="http://api.hikerbot.com/mdpi/accommodation_alpinehut_small.png" />
+            let iconFileName = feature.properties.iconFileName;
+            let fullPath = "http://api.hikerbot.com/mdpi/" + iconFileName + ".png";
+            return <Marker key={id} lat={lat} lng={lng} draggable={false} icon={fullPath} />
         }
         else
         if ( type==='line' ) {
