@@ -2,24 +2,35 @@ import React, {Component} from 'react';
 import {bindActionCreators} from 'redux'
 import {connect} from 'react-redux'
 import * as actions from '../store/actions'
-import {Gmaps, Marker, Circle, Polygon, Polyline, InfoWindow} from 'react-gmaps'
+import {Gmaps, Marker, Polyline, InfoWindow} from 'react-gmaps'
 import './MapView.css';
 
 class MapView extends Component {
     constructor(props) {
         super(props);
-        this.onIdle = this.onIdle.bind(this);
+
+        this.onIdle       = this.onIdle.bind(this);
         this.onMapCreated = this.onMapCreated.bind(this);
     }
 
     onIdle() {
+        console.log(`idle`);
+
         const {actions: {setBounds}} = this.props;
         const bounds = this.map.getBounds().toJSON();
         const center = this.map.getCenter().toJSON();
         const zoom = this.map.getZoom();
         setBounds(bounds, center, zoom);
 
-        this.renderPolyline();
+        console.log(`idle, setting bounds to ${bounds}`);
+        this.getPointsOnIdle();
+    }
+
+    doOnBoundsChanged() {
+        console.log(`doOnBoundsChanged`);
+
+        const {bounds, zoom, actions: {getPoints}} = this.props;
+        getPoints(bounds, zoom);
     }
 
     getInitialState() {
@@ -29,6 +40,7 @@ class MapView extends Component {
     }
 
     onMapCreated(map) {
+        console.log(`onMapCreated`);
 
         this.setState({ map: map, mapCreated: true });
 
@@ -64,19 +76,20 @@ class MapView extends Component {
         else
         if ( type==='line' ) {
 
-            var clist = feature.geometry.coordinates;
-            var pathlist = [];
-            for ( var i = 0; i < clist.length; ++i ) {
-                var item = {lat: clist[i][0], lng: clist[i][1]};
+            let clist = feature.geometry.coordinates;
+            let pathlist = [];
+            for ( let i = 0; i < clist.length; ++i ) {
+                let item = {lat: clist[i][0], lng: clist[i][1]};
                 pathlist.push( item )
             }
-            console.log(`got pathlist: ${pathlist}`);
+
+            let color = feature.properties.color;
 
             return <Polyline
                 key={ id }
                 path={ pathlist }
                 geodesic="true"
-                strokeColor="#FF0000"
+                strokeColor={ color }
                 strokeOpacity="0.5"
                 strokeWeight="4"
             />
@@ -99,6 +112,7 @@ class MapView extends Component {
                     loadingMessage={'Loading ...'}
                     params={{v: '3.exp'}}
                     onIdle={this.onIdle}
+                    onBoundsChaged={this.doOnBoundsChanged}
                     onMapCreated={this.onMapCreated}>
 
                     {features.map(this.renderFeature)}

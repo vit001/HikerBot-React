@@ -101,6 +101,10 @@ const dummyJson = {
     ]
 };
 
+function getHexColor(number){
+    return "#"+((number)>>>0).toString(16).slice(-6);
+};
+
 router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
     console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
 
@@ -154,22 +158,32 @@ router.post('/getPoints', ({body: {bounds, zoom}}, res) => {
                         console.log(`i=${i} track=${resp.track}`);
 
                         // Create an array of lat/longs defining this line
-                        var latlongs = [];
-                        for (var j = 0; j < resp.track.path.pathpoints.length; j++) {
-                            var pathpoint = resp.track.path.pathpoints[j];
+                        let latlongs = [];
+                        for (let j = 0; j < resp.track.path.pathpoints.length; j++) {
+                            let pathpoint = resp.track.path.pathpoints[j];
                             console.log(`pathpoint=${pathpoint}`);
-                            var latlong = [];
+                            let latlong = [];
                             latlong.push( pathpoint.late6 * 1e-6 );
                             latlong.push( pathpoint.lone6 * 1e-6 );
                             latlongs.push( latlong );
                         }
 
-                        var feature =
+                        // The line color is defined as a tag with key 'color'
+                        let color="#FF0000";
+                        for (let j = 0; j < resp.track.tags.length; j++) {
+                            let tag = resp.track.tags[j];
+                            if ( tag.k === 'color' ) {
+                                color = tag.v;
+                            }
+                        }
+
+                        let feature =
                             {
                                 "type": "Feature",
                                 "properties": {
                                     "id": i,
                                     "type": "line",
+                                    "color": getHexColor(color),
                                     "name": resp.track.name,
                                     "description": resp.track.description
                                 },
