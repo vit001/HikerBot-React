@@ -92,9 +92,7 @@ router.post('/getPointsAndTracks', ({body: {bounds, zoom}}, res) => {
                     features.push( feature );
                 }
 
-                const resJson = {
-                    "type": "FeatureCollection",
-                    "features": features };
+                const resJson = features;
                 var len = features.length;
                 console.log(`sending result length ${len} ${JSON.stringify(resJson)}`);
                 res.status(200).send(resJson);
