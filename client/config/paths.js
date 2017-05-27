@@ -37,8 +37,8 @@ if (isInCreateReactAppSource) {
   // before eject: we're in ./node_modules/react-scripts/config/
   module.exports = {
     appBuild: resolveApp('build'),
-    appHtml: resolveApp('index.html'),
-    appFavicon: resolveApp('favicon.ico'),
+    appHtml: resolveApp('public/index.html'),
+    appFavicon: resolveApp('public/favicon.ico'),
     appPackageJson: resolveApp('package.json'),
     appSrc: resolveApp('src'),
     appNodeModules: resolveApp('node_modules'),
@@ -49,8 +49,8 @@ if (isInCreateReactAppSource) {
   // after eject: we're in ./config/
   module.exports = {
     appBuild: resolveApp('build'),
-    appHtml: resolveApp('index.html'),
-    appFavicon: resolveApp('favicon.ico'),
+    appHtml: resolveApp('public/index.html'),
+    appFavicon: resolveApp('public/favicon.ico'),
     appPackageJson: resolveApp('package.json'),
     appSrc: resolveApp('src'),
     appNodeModules: resolveApp('node_modules'),
