@@ -12,7 +12,7 @@ const AuthToken   = null;
 router.post('/getDetailPoint', ({body: {id, version}}, res) => {
     console.log(`getDetailPoint was called, id=${id}, version=${version}`);
 
-    const connection = thrift.createConnection("api.hikerbot.com", 8082, {
+    const connection = thrift.createConnection("api.hikerbot.com", 8084, {
         transport: thrift.TFramedTransport
     });
     connection.on('connect', () => {

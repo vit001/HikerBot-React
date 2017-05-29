@@ -6,7 +6,7 @@ const DataStore = require('./gen-nodejs/DataStore');
 
 /* GET all selectors */
 router.get('/', (req, res, next) => {
-  const connection = thrift.createConnection("api.hikerbot.com", 8082, {
+  const connection = thrift.createConnection("api.hikerbot.com", 8084, {
     transport: thrift.TFramedTransport
   });
   connection.on('connect', () => {

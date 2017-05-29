@@ -11,7 +11,7 @@ const SelectorPCT = 4;
 router.post('/getPointsAndTracks', ({body: {bounds, zoom}}, res) => {
     console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
 
-    const connection = thrift.createConnection("api.hikerbot.com", 8082, {
+    const connection = thrift.createConnection("api.hikerbot.com", 8084, {
         transport: thrift.TFramedTransport
     });
     connection.on('connect', () => {
