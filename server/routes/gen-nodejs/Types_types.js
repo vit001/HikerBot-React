@@ -71,7 +71,8 @@ ttypes.PrivilegeType = {
   'EDIT_SELECTOR_WIKI' : 604,
   'EDIT_SELECTOR_TAGS' : 605,
   'EDIT_SELECTOR_PREVIEW_PATH' : 606,
-  'EDIT_USER_PRIVILEGES' : 701
+  'EDIT_USER_PRIVILEGES' : 701,
+  'NEW_OR_EDIT_CONTEST' : 801
 };
 ttypes.EntitySortOrder = {
   'CREATED' : 1,
@@ -87,6 +88,13 @@ ttypes.VoteType = {
   'VOTE_SPAM' : 5,
   'VOTE_STARS' : 6
 };
+ttypes.NotificationType = {
+  'THANKS' : 1,
+  'CONFIRM' : 2,
+  'STARS' : 3,
+  'VIEW' : 4,
+  'PROMOTIONAL' : 5
+};
 ttypes.Datatype = {
   'USER' : 1,
   'POINT' : 2,
@@ -94,7 +102,9 @@ ttypes.Datatype = {
   'RELATION' : 4,
   'MAP' : 5,
   'ANALYTICS' : 6,
-  'SELECTOR' : 7
+  'SELECTOR' : 7,
+  'CONTEST' : 8,
+  'NOTIFICATION' : 9
 };
 ttypes.AnalyticsType = {
   'ANALYTICS_SCREENVIEW' : 1
@@ -111,6 +121,136 @@ ttypes.ReportInputType = {
   'DOUBLE' : 3,
   'STRING' : 4
 };
+var Vote = module.exports.Vote = function(args) {
+  this.target_id = null;
+  this.target_version = null;
+  this.vote_type = null;
+  this.value = null;
+  this.timestamp = null;
+  this.target_user_id = null;
+  if (args) {
+    if (args.target_id !== undefined && args.target_id !== null) {
+      this.target_id = args.target_id;
+    }
+    if (args.target_version !== undefined && args.target_version !== null) {
+      this.target_version = args.target_version;
+    }
+    if (args.vote_type !== undefined && args.vote_type !== null) {
+      this.vote_type = args.vote_type;
+    }
+    if (args.value !== undefined && args.value !== null) {
+      this.value = args.value;
+    }
+    if (args.timestamp !== undefined && args.timestamp !== null) {
+      this.timestamp = args.timestamp;
+    }
+    if (args.target_user_id !== undefined && args.target_user_id !== null) {
+      this.target_user_id = args.target_user_id;
+    }
+  }
+};
+Vote.prototype = {};
+Vote.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I64) {
+        this.target_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I64) {
+        this.target_version = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.I32) {
+        this.vote_type = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 4:
+      if (ftype == Thrift.Type.I32) {
+        this.value = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 5:
+      if (ftype == Thrift.Type.I64) {
+        this.timestamp = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 6:
+      if (ftype == Thrift.Type.I64) {
+        this.target_user_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Vote.prototype.write = function(output) {
+  output.writeStructBegin('Vote');
+  if (this.target_id !== null && this.target_id !== undefined) {
+    output.writeFieldBegin('target_id', Thrift.Type.I64, 1);
+    output.writeI64(this.target_id);
+    output.writeFieldEnd();
+  }
+  if (this.target_version !== null && this.target_version !== undefined) {
+    output.writeFieldBegin('target_version', Thrift.Type.I64, 2);
+    output.writeI64(this.target_version);
+    output.writeFieldEnd();
+  }
+  if (this.vote_type !== null && this.vote_type !== undefined) {
+    output.writeFieldBegin('vote_type', Thrift.Type.I32, 3);
+    output.writeI32(this.vote_type);
+    output.writeFieldEnd();
+  }
+  if (this.value !== null && this.value !== undefined) {
+    output.writeFieldBegin('value', Thrift.Type.I32, 4);
+    output.writeI32(this.value);
+    output.writeFieldEnd();
+  }
+  if (this.timestamp !== null && this.timestamp !== undefined) {
+    output.writeFieldBegin('timestamp', Thrift.Type.I64, 5);
+    output.writeI64(this.timestamp);
+    output.writeFieldEnd();
+  }
+  if (this.target_user_id !== null && this.target_user_id !== undefined) {
+    output.writeFieldBegin('target_user_id', Thrift.Type.I64, 6);
+    output.writeI64(this.target_user_id);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 var Data = module.exports.Data = function(args) {
   this.bodyHash = null;
   this.size = null;
@@ -1088,6 +1228,610 @@ Crumb.prototype.write = function(output) {
   return;
 };
 
+var Notification = module.exports.Notification = function(args) {
+  this.id = null;
+  this.version = null;
+  this.changeset_id = null;
+  this.type = null;
+  this.content = null;
+  this.tags = null;
+  this.resources = null;
+  this.selector_ids = null;
+  this.notify_user_id = null;
+  this.triggerTime = null;
+  this.target_user_id = null;
+  this.target_id = null;
+  this.target_resource_id = null;
+  this.deleted = null;
+  if (args) {
+    if (args.id !== undefined && args.id !== null) {
+      this.id = args.id;
+    }
+    if (args.version !== undefined && args.version !== null) {
+      this.version = args.version;
+    }
+    if (args.changeset_id !== undefined && args.changeset_id !== null) {
+      this.changeset_id = args.changeset_id;
+    }
+    if (args.type !== undefined && args.type !== null) {
+      this.type = args.type;
+    }
+    if (args.content !== undefined && args.content !== null) {
+      this.content = args.content;
+    }
+    if (args.tags !== undefined && args.tags !== null) {
+      this.tags = Thrift.copyList(args.tags, [ttypes.Tag]);
+    }
+    if (args.resources !== undefined && args.resources !== null) {
+      this.resources = Thrift.copyList(args.resources, [ttypes.Resource]);
+    }
+    if (args.selector_ids !== undefined && args.selector_ids !== null) {
+      this.selector_ids = Thrift.copyList(args.selector_ids, [null]);
+    }
+    if (args.notify_user_id !== undefined && args.notify_user_id !== null) {
+      this.notify_user_id = args.notify_user_id;
+    }
+    if (args.triggerTime !== undefined && args.triggerTime !== null) {
+      this.triggerTime = args.triggerTime;
+    }
+    if (args.target_user_id !== undefined && args.target_user_id !== null) {
+      this.target_user_id = args.target_user_id;
+    }
+    if (args.target_id !== undefined && args.target_id !== null) {
+      this.target_id = args.target_id;
+    }
+    if (args.target_resource_id !== undefined && args.target_resource_id !== null) {
+      this.target_resource_id = args.target_resource_id;
+    }
+    if (args.deleted !== undefined && args.deleted !== null) {
+      this.deleted = args.deleted;
+    }
+  }
+};
+Notification.prototype = {};
+Notification.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I64) {
+        this.id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I64) {
+        this.version = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.I64) {
+        this.changeset_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 4:
+      if (ftype == Thrift.Type.I32) {
+        this.type = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 5:
+      if (ftype == Thrift.Type.STRING) {
+        this.content = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 6:
+      if (ftype == Thrift.Type.SET) {
+        var _size24 = 0;
+        var _rtmp328;
+        this.tags = [];
+        var _etype27 = 0;
+        _rtmp328 = input.readSetBegin();
+        _etype27 = _rtmp328.etype;
+        _size24 = _rtmp328.size;
+        for (var _i29 = 0; _i29 < _size24; ++_i29)
+        {
+          var elem30 = null;
+          elem30 = new ttypes.Tag();
+          elem30.read(input);
+          this.tags.push(elem30);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 7:
+      if (ftype == Thrift.Type.SET) {
+        var _size31 = 0;
+        var _rtmp335;
+        this.resources = [];
+        var _etype34 = 0;
+        _rtmp335 = input.readSetBegin();
+        _etype34 = _rtmp335.etype;
+        _size31 = _rtmp335.size;
+        for (var _i36 = 0; _i36 < _size31; ++_i36)
+        {
+          var elem37 = null;
+          elem37 = new ttypes.Resource();
+          elem37.read(input);
+          this.resources.push(elem37);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 8:
+      if (ftype == Thrift.Type.SET) {
+        var _size38 = 0;
+        var _rtmp342;
+        this.selector_ids = [];
+        var _etype41 = 0;
+        _rtmp342 = input.readSetBegin();
+        _etype41 = _rtmp342.etype;
+        _size38 = _rtmp342.size;
+        for (var _i43 = 0; _i43 < _size38; ++_i43)
+        {
+          var elem44 = null;
+          elem44 = input.readI64();
+          this.selector_ids.push(elem44);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 9:
+      if (ftype == Thrift.Type.I64) {
+        this.notify_user_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 10:
+      if (ftype == Thrift.Type.I64) {
+        this.triggerTime = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 11:
+      if (ftype == Thrift.Type.I64) {
+        this.target_user_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 12:
+      if (ftype == Thrift.Type.I64) {
+        this.target_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 13:
+      if (ftype == Thrift.Type.I64) {
+        this.target_resource_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 14:
+      if (ftype == Thrift.Type.I64) {
+        this.deleted = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Notification.prototype.write = function(output) {
+  output.writeStructBegin('Notification');
+  if (this.id !== null && this.id !== undefined) {
+    output.writeFieldBegin('id', Thrift.Type.I64, 1);
+    output.writeI64(this.id);
+    output.writeFieldEnd();
+  }
+  if (this.version !== null && this.version !== undefined) {
+    output.writeFieldBegin('version', Thrift.Type.I64, 2);
+    output.writeI64(this.version);
+    output.writeFieldEnd();
+  }
+  if (this.changeset_id !== null && this.changeset_id !== undefined) {
+    output.writeFieldBegin('changeset_id', Thrift.Type.I64, 3);
+    output.writeI64(this.changeset_id);
+    output.writeFieldEnd();
+  }
+  if (this.type !== null && this.type !== undefined) {
+    output.writeFieldBegin('type', Thrift.Type.I32, 4);
+    output.writeI32(this.type);
+    output.writeFieldEnd();
+  }
+  if (this.content !== null && this.content !== undefined) {
+    output.writeFieldBegin('content', Thrift.Type.STRING, 5);
+    output.writeString(this.content);
+    output.writeFieldEnd();
+  }
+  if (this.tags !== null && this.tags !== undefined) {
+    output.writeFieldBegin('tags', Thrift.Type.SET, 6);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
+    for (var iter45 in this.tags)
+    {
+      if (this.tags.hasOwnProperty(iter45))
+      {
+        iter45 = this.tags[iter45];
+        iter45.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.resources !== null && this.resources !== undefined) {
+    output.writeFieldBegin('resources', Thrift.Type.SET, 7);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
+    for (var iter46 in this.resources)
+    {
+      if (this.resources.hasOwnProperty(iter46))
+      {
+        iter46 = this.resources[iter46];
+        iter46.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.selector_ids !== null && this.selector_ids !== undefined) {
+    output.writeFieldBegin('selector_ids', Thrift.Type.SET, 8);
+    output.writeSetBegin(Thrift.Type.I64, this.selector_ids.length);
+    for (var iter47 in this.selector_ids)
+    {
+      if (this.selector_ids.hasOwnProperty(iter47))
+      {
+        iter47 = this.selector_ids[iter47];
+        output.writeI64(iter47);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.notify_user_id !== null && this.notify_user_id !== undefined) {
+    output.writeFieldBegin('notify_user_id', Thrift.Type.I64, 9);
+    output.writeI64(this.notify_user_id);
+    output.writeFieldEnd();
+  }
+  if (this.triggerTime !== null && this.triggerTime !== undefined) {
+    output.writeFieldBegin('triggerTime', Thrift.Type.I64, 10);
+    output.writeI64(this.triggerTime);
+    output.writeFieldEnd();
+  }
+  if (this.target_user_id !== null && this.target_user_id !== undefined) {
+    output.writeFieldBegin('target_user_id', Thrift.Type.I64, 11);
+    output.writeI64(this.target_user_id);
+    output.writeFieldEnd();
+  }
+  if (this.target_id !== null && this.target_id !== undefined) {
+    output.writeFieldBegin('target_id', Thrift.Type.I64, 12);
+    output.writeI64(this.target_id);
+    output.writeFieldEnd();
+  }
+  if (this.target_resource_id !== null && this.target_resource_id !== undefined) {
+    output.writeFieldBegin('target_resource_id', Thrift.Type.I64, 13);
+    output.writeI64(this.target_resource_id);
+    output.writeFieldEnd();
+  }
+  if (this.deleted !== null && this.deleted !== undefined) {
+    output.writeFieldBegin('deleted', Thrift.Type.I64, 14);
+    output.writeI64(this.deleted);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var Contest = module.exports.Contest = function(args) {
+  this.id = null;
+  this.version = null;
+  this.changeset_id = null;
+  this.title = null;
+  this.description = null;
+  this.tags = null;
+  this.resources = null;
+  this.selector_ids = null;
+  this.startTime = null;
+  this.endTime = null;
+  this.deleted = null;
+  if (args) {
+    if (args.id !== undefined && args.id !== null) {
+      this.id = args.id;
+    }
+    if (args.version !== undefined && args.version !== null) {
+      this.version = args.version;
+    }
+    if (args.changeset_id !== undefined && args.changeset_id !== null) {
+      this.changeset_id = args.changeset_id;
+    }
+    if (args.title !== undefined && args.title !== null) {
+      this.title = args.title;
+    }
+    if (args.description !== undefined && args.description !== null) {
+      this.description = args.description;
+    }
+    if (args.tags !== undefined && args.tags !== null) {
+      this.tags = Thrift.copyList(args.tags, [ttypes.Tag]);
+    }
+    if (args.resources !== undefined && args.resources !== null) {
+      this.resources = Thrift.copyList(args.resources, [ttypes.Resource]);
+    }
+    if (args.selector_ids !== undefined && args.selector_ids !== null) {
+      this.selector_ids = Thrift.copyList(args.selector_ids, [null]);
+    }
+    if (args.startTime !== undefined && args.startTime !== null) {
+      this.startTime = args.startTime;
+    }
+    if (args.endTime !== undefined && args.endTime !== null) {
+      this.endTime = args.endTime;
+    }
+    if (args.deleted !== undefined && args.deleted !== null) {
+      this.deleted = args.deleted;
+    }
+  }
+};
+Contest.prototype = {};
+Contest.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I64) {
+        this.id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I64) {
+        this.version = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.I64) {
+        this.changeset_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 4:
+      if (ftype == Thrift.Type.STRING) {
+        this.title = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 5:
+      if (ftype == Thrift.Type.STRING) {
+        this.description = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 6:
+      if (ftype == Thrift.Type.SET) {
+        var _size48 = 0;
+        var _rtmp352;
+        this.tags = [];
+        var _etype51 = 0;
+        _rtmp352 = input.readSetBegin();
+        _etype51 = _rtmp352.etype;
+        _size48 = _rtmp352.size;
+        for (var _i53 = 0; _i53 < _size48; ++_i53)
+        {
+          var elem54 = null;
+          elem54 = new ttypes.Tag();
+          elem54.read(input);
+          this.tags.push(elem54);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 7:
+      if (ftype == Thrift.Type.SET) {
+        var _size55 = 0;
+        var _rtmp359;
+        this.resources = [];
+        var _etype58 = 0;
+        _rtmp359 = input.readSetBegin();
+        _etype58 = _rtmp359.etype;
+        _size55 = _rtmp359.size;
+        for (var _i60 = 0; _i60 < _size55; ++_i60)
+        {
+          var elem61 = null;
+          elem61 = new ttypes.Resource();
+          elem61.read(input);
+          this.resources.push(elem61);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 8:
+      if (ftype == Thrift.Type.SET) {
+        var _size62 = 0;
+        var _rtmp366;
+        this.selector_ids = [];
+        var _etype65 = 0;
+        _rtmp366 = input.readSetBegin();
+        _etype65 = _rtmp366.etype;
+        _size62 = _rtmp366.size;
+        for (var _i67 = 0; _i67 < _size62; ++_i67)
+        {
+          var elem68 = null;
+          elem68 = input.readI64();
+          this.selector_ids.push(elem68);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 9:
+      if (ftype == Thrift.Type.I64) {
+        this.startTime = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 10:
+      if (ftype == Thrift.Type.I64) {
+        this.endTime = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 11:
+      if (ftype == Thrift.Type.I64) {
+        this.deleted = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Contest.prototype.write = function(output) {
+  output.writeStructBegin('Contest');
+  if (this.id !== null && this.id !== undefined) {
+    output.writeFieldBegin('id', Thrift.Type.I64, 1);
+    output.writeI64(this.id);
+    output.writeFieldEnd();
+  }
+  if (this.version !== null && this.version !== undefined) {
+    output.writeFieldBegin('version', Thrift.Type.I64, 2);
+    output.writeI64(this.version);
+    output.writeFieldEnd();
+  }
+  if (this.changeset_id !== null && this.changeset_id !== undefined) {
+    output.writeFieldBegin('changeset_id', Thrift.Type.I64, 3);
+    output.writeI64(this.changeset_id);
+    output.writeFieldEnd();
+  }
+  if (this.title !== null && this.title !== undefined) {
+    output.writeFieldBegin('title', Thrift.Type.STRING, 4);
+    output.writeString(this.title);
+    output.writeFieldEnd();
+  }
+  if (this.description !== null && this.description !== undefined) {
+    output.writeFieldBegin('description', Thrift.Type.STRING, 5);
+    output.writeString(this.description);
+    output.writeFieldEnd();
+  }
+  if (this.tags !== null && this.tags !== undefined) {
+    output.writeFieldBegin('tags', Thrift.Type.SET, 6);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
+    for (var iter69 in this.tags)
+    {
+      if (this.tags.hasOwnProperty(iter69))
+      {
+        iter69 = this.tags[iter69];
+        iter69.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.resources !== null && this.resources !== undefined) {
+    output.writeFieldBegin('resources', Thrift.Type.SET, 7);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
+    for (var iter70 in this.resources)
+    {
+      if (this.resources.hasOwnProperty(iter70))
+      {
+        iter70 = this.resources[iter70];
+        iter70.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.selector_ids !== null && this.selector_ids !== undefined) {
+    output.writeFieldBegin('selector_ids', Thrift.Type.SET, 8);
+    output.writeSetBegin(Thrift.Type.I64, this.selector_ids.length);
+    for (var iter71 in this.selector_ids)
+    {
+      if (this.selector_ids.hasOwnProperty(iter71))
+      {
+        iter71 = this.selector_ids[iter71];
+        output.writeI64(iter71);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.startTime !== null && this.startTime !== undefined) {
+    output.writeFieldBegin('startTime', Thrift.Type.I64, 9);
+    output.writeI64(this.startTime);
+    output.writeFieldEnd();
+  }
+  if (this.endTime !== null && this.endTime !== undefined) {
+    output.writeFieldBegin('endTime', Thrift.Type.I64, 10);
+    output.writeI64(this.endTime);
+    output.writeFieldEnd();
+  }
+  if (this.deleted !== null && this.deleted !== undefined) {
+    output.writeFieldBegin('deleted', Thrift.Type.I64, 11);
+    output.writeI64(this.deleted);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 var User = module.exports.User = function(args) {
   this.id = null;
   this.version = null;
@@ -1102,6 +1846,7 @@ var User = module.exports.User = function(args) {
   this.badges = null;
   this.reputation = null;
   this.deleted = null;
+  this.leaderBoardPoints = null;
   if (args) {
     if (args.id !== undefined && args.id !== null) {
       this.id = args.id;
@@ -1128,7 +1873,7 @@ var User = module.exports.User = function(args) {
       this.user_location_history_set = Thrift.copyList(args.user_location_history_set, [null]);
     }
     if (args.votes !== undefined && args.votes !== null) {
-      this.votes = Thrift.copyList(args.votes, [null]);
+      this.votes = Thrift.copyList(args.votes, [ttypes.Vote]);
     }
     if (args.privilege_map !== undefined && args.privilege_map !== null) {
       this.privilege_map = Thrift.copyMap(args.privilege_map, [Thrift.copyList, null]);
@@ -1141,6 +1886,9 @@ var User = module.exports.User = function(args) {
     }
     if (args.deleted !== undefined && args.deleted !== null) {
       this.deleted = args.deleted;
+    }
+    if (args.leaderBoardPoints !== undefined && args.leaderBoardPoints !== null) {
+      this.leaderBoardPoints = Thrift.copyMap(args.leaderBoardPoints, [null]);
     }
   }
 };
@@ -1195,19 +1943,19 @@ User.prototype.read = function(input) {
       break;
       case 6:
       if (ftype == Thrift.Type.SET) {
-        var _size24 = 0;
-        var _rtmp328;
+        var _size72 = 0;
+        var _rtmp376;
         this.tags = [];
-        var _etype27 = 0;
-        _rtmp328 = input.readSetBegin();
-        _etype27 = _rtmp328.etype;
-        _size24 = _rtmp328.size;
-        for (var _i29 = 0; _i29 < _size24; ++_i29)
+        var _etype75 = 0;
+        _rtmp376 = input.readSetBegin();
+        _etype75 = _rtmp376.etype;
+        _size72 = _rtmp376.size;
+        for (var _i77 = 0; _i77 < _size72; ++_i77)
         {
-          var elem30 = null;
-          elem30 = new ttypes.Tag();
-          elem30.read(input);
-          this.tags.push(elem30);
+          var elem78 = null;
+          elem78 = new ttypes.Tag();
+          elem78.read(input);
+          this.tags.push(elem78);
         }
         input.readSetEnd();
       } else {
@@ -1216,19 +1964,19 @@ User.prototype.read = function(input) {
       break;
       case 7:
       if (ftype == Thrift.Type.SET) {
-        var _size31 = 0;
-        var _rtmp335;
+        var _size79 = 0;
+        var _rtmp383;
         this.resources = [];
-        var _etype34 = 0;
-        _rtmp335 = input.readSetBegin();
-        _etype34 = _rtmp335.etype;
-        _size31 = _rtmp335.size;
-        for (var _i36 = 0; _i36 < _size31; ++_i36)
+        var _etype82 = 0;
+        _rtmp383 = input.readSetBegin();
+        _etype82 = _rtmp383.etype;
+        _size79 = _rtmp383.size;
+        for (var _i84 = 0; _i84 < _size79; ++_i84)
         {
-          var elem37 = null;
-          elem37 = new ttypes.Resource();
-          elem37.read(input);
-          this.resources.push(elem37);
+          var elem85 = null;
+          elem85 = new ttypes.Resource();
+          elem85.read(input);
+          this.resources.push(elem85);
         }
         input.readSetEnd();
       } else {
@@ -1237,19 +1985,19 @@ User.prototype.read = function(input) {
       break;
       case 8:
       if (ftype == Thrift.Type.SET) {
-        var _size38 = 0;
-        var _rtmp342;
+        var _size86 = 0;
+        var _rtmp390;
         this.user_location_history_set = [];
-        var _etype41 = 0;
-        _rtmp342 = input.readSetBegin();
-        _etype41 = _rtmp342.etype;
-        _size38 = _rtmp342.size;
-        for (var _i43 = 0; _i43 < _size38; ++_i43)
+        var _etype89 = 0;
+        _rtmp390 = input.readSetBegin();
+        _etype89 = _rtmp390.etype;
+        _size86 = _rtmp390.size;
+        for (var _i91 = 0; _i91 < _size86; ++_i91)
         {
-          var elem44 = null;
-          elem44 = new ttypes.UserLocationHistory();
-          elem44.read(input);
-          this.user_location_history_set.push(elem44);
+          var elem92 = null;
+          elem92 = new ttypes.UserLocationHistory();
+          elem92.read(input);
+          this.user_location_history_set.push(elem92);
         }
         input.readSetEnd();
       } else {
@@ -1258,19 +2006,19 @@ User.prototype.read = function(input) {
       break;
       case 9:
       if (ftype == Thrift.Type.SET) {
-        var _size45 = 0;
-        var _rtmp349;
+        var _size93 = 0;
+        var _rtmp397;
         this.votes = [];
-        var _etype48 = 0;
-        _rtmp349 = input.readSetBegin();
-        _etype48 = _rtmp349.etype;
-        _size45 = _rtmp349.size;
-        for (var _i50 = 0; _i50 < _size45; ++_i50)
+        var _etype96 = 0;
+        _rtmp397 = input.readSetBegin();
+        _etype96 = _rtmp397.etype;
+        _size93 = _rtmp397.size;
+        for (var _i98 = 0; _i98 < _size93; ++_i98)
         {
-          var elem51 = null;
-          elem51 = new ttypes.Vote();
-          elem51.read(input);
-          this.votes.push(elem51);
+          var elem99 = null;
+          elem99 = new ttypes.Vote();
+          elem99.read(input);
+          this.votes.push(elem99);
         }
         input.readSetEnd();
       } else {
@@ -1279,35 +2027,35 @@ User.prototype.read = function(input) {
       break;
       case 10:
       if (ftype == Thrift.Type.MAP) {
-        var _size52 = 0;
-        var _rtmp356;
+        var _size100 = 0;
+        var _rtmp3104;
         this.privilege_map = {};
-        var _ktype53 = 0;
-        var _vtype54 = 0;
-        _rtmp356 = input.readMapBegin();
-        _ktype53 = _rtmp356.ktype;
-        _vtype54 = _rtmp356.vtype;
-        _size52 = _rtmp356.size;
-        for (var _i57 = 0; _i57 < _size52; ++_i57)
+        var _ktype101 = 0;
+        var _vtype102 = 0;
+        _rtmp3104 = input.readMapBegin();
+        _ktype101 = _rtmp3104.ktype;
+        _vtype102 = _rtmp3104.vtype;
+        _size100 = _rtmp3104.size;
+        for (var _i105 = 0; _i105 < _size100; ++_i105)
         {
-          var key58 = null;
-          var val59 = null;
-          key58 = input.readI64();
-          var _size60 = 0;
-          var _rtmp364;
-          val59 = [];
-          var _etype63 = 0;
-          _rtmp364 = input.readSetBegin();
-          _etype63 = _rtmp364.etype;
-          _size60 = _rtmp364.size;
-          for (var _i65 = 0; _i65 < _size60; ++_i65)
+          var key106 = null;
+          var val107 = null;
+          key106 = input.readI64();
+          var _size108 = 0;
+          var _rtmp3112;
+          val107 = [];
+          var _etype111 = 0;
+          _rtmp3112 = input.readSetBegin();
+          _etype111 = _rtmp3112.etype;
+          _size108 = _rtmp3112.size;
+          for (var _i113 = 0; _i113 < _size108; ++_i113)
           {
-            var elem66 = null;
-            elem66 = input.readI32();
-            val59.push(elem66);
+            var elem114 = null;
+            elem114 = input.readI32();
+            val107.push(elem114);
           }
           input.readSetEnd();
-          this.privilege_map[key58] = val59;
+          this.privilege_map[key106] = val107;
         }
         input.readMapEnd();
       } else {
@@ -1316,18 +2064,18 @@ User.prototype.read = function(input) {
       break;
       case 11:
       if (ftype == Thrift.Type.SET) {
-        var _size67 = 0;
-        var _rtmp371;
+        var _size115 = 0;
+        var _rtmp3119;
         this.badges = [];
-        var _etype70 = 0;
-        _rtmp371 = input.readSetBegin();
-        _etype70 = _rtmp371.etype;
-        _size67 = _rtmp371.size;
-        for (var _i72 = 0; _i72 < _size67; ++_i72)
+        var _etype118 = 0;
+        _rtmp3119 = input.readSetBegin();
+        _etype118 = _rtmp3119.etype;
+        _size115 = _rtmp3119.size;
+        for (var _i120 = 0; _i120 < _size115; ++_i120)
         {
-          var elem73 = null;
-          elem73 = input.readI32();
-          this.badges.push(elem73);
+          var elem121 = null;
+          elem121 = input.readI32();
+          this.badges.push(elem121);
         }
         input.readSetEnd();
       } else {
@@ -1344,6 +2092,30 @@ User.prototype.read = function(input) {
       case 13:
       if (ftype == Thrift.Type.I64) {
         this.deleted = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 14:
+      if (ftype == Thrift.Type.MAP) {
+        var _size122 = 0;
+        var _rtmp3126;
+        this.leaderBoardPoints = {};
+        var _ktype123 = 0;
+        var _vtype124 = 0;
+        _rtmp3126 = input.readMapBegin();
+        _ktype123 = _rtmp3126.ktype;
+        _vtype124 = _rtmp3126.vtype;
+        _size122 = _rtmp3126.size;
+        for (var _i127 = 0; _i127 < _size122; ++_i127)
+        {
+          var key128 = null;
+          var val129 = null;
+          key128 = input.readI64();
+          val129 = input.readI32();
+          this.leaderBoardPoints[key128] = val129;
+        }
+        input.readMapEnd();
       } else {
         input.skip(ftype);
       }
@@ -1387,12 +2159,12 @@ User.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 6);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter74 in this.tags)
+    for (var iter130 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter74))
+      if (this.tags.hasOwnProperty(iter130))
       {
-        iter74 = this.tags[iter74];
-        iter74.write(output);
+        iter130 = this.tags[iter130];
+        iter130.write(output);
       }
     }
     output.writeSetEnd();
@@ -1401,12 +2173,12 @@ User.prototype.write = function(output) {
   if (this.resources !== null && this.resources !== undefined) {
     output.writeFieldBegin('resources', Thrift.Type.SET, 7);
     output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
-    for (var iter75 in this.resources)
+    for (var iter131 in this.resources)
     {
-      if (this.resources.hasOwnProperty(iter75))
+      if (this.resources.hasOwnProperty(iter131))
       {
-        iter75 = this.resources[iter75];
-        iter75.write(output);
+        iter131 = this.resources[iter131];
+        iter131.write(output);
       }
     }
     output.writeSetEnd();
@@ -1415,12 +2187,12 @@ User.prototype.write = function(output) {
   if (this.user_location_history_set !== null && this.user_location_history_set !== undefined) {
     output.writeFieldBegin('user_location_history_set', Thrift.Type.SET, 8);
     output.writeSetBegin(Thrift.Type.STRUCT, this.user_location_history_set.length);
-    for (var iter76 in this.user_location_history_set)
+    for (var iter132 in this.user_location_history_set)
     {
-      if (this.user_location_history_set.hasOwnProperty(iter76))
+      if (this.user_location_history_set.hasOwnProperty(iter132))
       {
-        iter76 = this.user_location_history_set[iter76];
-        iter76.write(output);
+        iter132 = this.user_location_history_set[iter132];
+        iter132.write(output);
       }
     }
     output.writeSetEnd();
@@ -1429,12 +2201,12 @@ User.prototype.write = function(output) {
   if (this.votes !== null && this.votes !== undefined) {
     output.writeFieldBegin('votes', Thrift.Type.SET, 9);
     output.writeSetBegin(Thrift.Type.STRUCT, this.votes.length);
-    for (var iter77 in this.votes)
+    for (var iter133 in this.votes)
     {
-      if (this.votes.hasOwnProperty(iter77))
+      if (this.votes.hasOwnProperty(iter133))
       {
-        iter77 = this.votes[iter77];
-        iter77.write(output);
+        iter133 = this.votes[iter133];
+        iter133.write(output);
       }
     }
     output.writeSetEnd();
@@ -1443,19 +2215,19 @@ User.prototype.write = function(output) {
   if (this.privilege_map !== null && this.privilege_map !== undefined) {
     output.writeFieldBegin('privilege_map', Thrift.Type.MAP, 10);
     output.writeMapBegin(Thrift.Type.I64, Thrift.Type.SET, Thrift.objectLength(this.privilege_map));
-    for (var kiter78 in this.privilege_map)
+    for (var kiter134 in this.privilege_map)
     {
-      if (this.privilege_map.hasOwnProperty(kiter78))
+      if (this.privilege_map.hasOwnProperty(kiter134))
       {
-        var viter79 = this.privilege_map[kiter78];
-        output.writeI64(kiter78);
-        output.writeSetBegin(Thrift.Type.I32, viter79.length);
-        for (var iter80 in viter79)
+        var viter135 = this.privilege_map[kiter134];
+        output.writeI64(kiter134);
+        output.writeSetBegin(Thrift.Type.I32, viter135.length);
+        for (var iter136 in viter135)
         {
-          if (viter79.hasOwnProperty(iter80))
+          if (viter135.hasOwnProperty(iter136))
           {
-            iter80 = viter79[iter80];
-            output.writeI32(iter80);
+            iter136 = viter135[iter136];
+            output.writeI32(iter136);
           }
         }
         output.writeSetEnd();
@@ -1467,12 +2239,12 @@ User.prototype.write = function(output) {
   if (this.badges !== null && this.badges !== undefined) {
     output.writeFieldBegin('badges', Thrift.Type.SET, 11);
     output.writeSetBegin(Thrift.Type.I32, this.badges.length);
-    for (var iter81 in this.badges)
+    for (var iter137 in this.badges)
     {
-      if (this.badges.hasOwnProperty(iter81))
+      if (this.badges.hasOwnProperty(iter137))
       {
-        iter81 = this.badges[iter81];
-        output.writeI32(iter81);
+        iter137 = this.badges[iter137];
+        output.writeI32(iter137);
       }
     }
     output.writeSetEnd();
@@ -1486,6 +2258,21 @@ User.prototype.write = function(output) {
   if (this.deleted !== null && this.deleted !== undefined) {
     output.writeFieldBegin('deleted', Thrift.Type.I64, 13);
     output.writeI64(this.deleted);
+    output.writeFieldEnd();
+  }
+  if (this.leaderBoardPoints !== null && this.leaderBoardPoints !== undefined) {
+    output.writeFieldBegin('leaderBoardPoints', Thrift.Type.MAP, 14);
+    output.writeMapBegin(Thrift.Type.I64, Thrift.Type.I32, Thrift.objectLength(this.leaderBoardPoints));
+    for (var kiter138 in this.leaderBoardPoints)
+    {
+      if (this.leaderBoardPoints.hasOwnProperty(kiter138))
+      {
+        var viter139 = this.leaderBoardPoints[kiter138];
+        output.writeI64(kiter138);
+        output.writeI32(viter139);
+      }
+    }
+    output.writeMapEnd();
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -1643,19 +2430,19 @@ Point.prototype.read = function(input) {
       break;
       case 11:
       if (ftype == Thrift.Type.SET) {
-        var _size82 = 0;
-        var _rtmp386;
+        var _size140 = 0;
+        var _rtmp3144;
         this.tags = [];
-        var _etype85 = 0;
-        _rtmp386 = input.readSetBegin();
-        _etype85 = _rtmp386.etype;
-        _size82 = _rtmp386.size;
-        for (var _i87 = 0; _i87 < _size82; ++_i87)
+        var _etype143 = 0;
+        _rtmp3144 = input.readSetBegin();
+        _etype143 = _rtmp3144.etype;
+        _size140 = _rtmp3144.size;
+        for (var _i145 = 0; _i145 < _size140; ++_i145)
         {
-          var elem88 = null;
-          elem88 = new ttypes.Tag();
-          elem88.read(input);
-          this.tags.push(elem88);
+          var elem146 = null;
+          elem146 = new ttypes.Tag();
+          elem146.read(input);
+          this.tags.push(elem146);
         }
         input.readSetEnd();
       } else {
@@ -1664,19 +2451,19 @@ Point.prototype.read = function(input) {
       break;
       case 12:
       if (ftype == Thrift.Type.SET) {
-        var _size89 = 0;
-        var _rtmp393;
+        var _size147 = 0;
+        var _rtmp3151;
         this.resources = [];
-        var _etype92 = 0;
-        _rtmp393 = input.readSetBegin();
-        _etype92 = _rtmp393.etype;
-        _size89 = _rtmp393.size;
-        for (var _i94 = 0; _i94 < _size89; ++_i94)
+        var _etype150 = 0;
+        _rtmp3151 = input.readSetBegin();
+        _etype150 = _rtmp3151.etype;
+        _size147 = _rtmp3151.size;
+        for (var _i152 = 0; _i152 < _size147; ++_i152)
         {
-          var elem95 = null;
-          elem95 = new ttypes.Resource();
-          elem95.read(input);
-          this.resources.push(elem95);
+          var elem153 = null;
+          elem153 = new ttypes.Resource();
+          elem153.read(input);
+          this.resources.push(elem153);
         }
         input.readSetEnd();
       } else {
@@ -1685,18 +2472,18 @@ Point.prototype.read = function(input) {
       break;
       case 13:
       if (ftype == Thrift.Type.SET) {
-        var _size96 = 0;
-        var _rtmp3100;
+        var _size154 = 0;
+        var _rtmp3158;
         this.selector_ids = [];
-        var _etype99 = 0;
-        _rtmp3100 = input.readSetBegin();
-        _etype99 = _rtmp3100.etype;
-        _size96 = _rtmp3100.size;
-        for (var _i101 = 0; _i101 < _size96; ++_i101)
+        var _etype157 = 0;
+        _rtmp3158 = input.readSetBegin();
+        _etype157 = _rtmp3158.etype;
+        _size154 = _rtmp3158.size;
+        for (var _i159 = 0; _i159 < _size154; ++_i159)
         {
-          var elem102 = null;
-          elem102 = input.readI64();
-          this.selector_ids.push(elem102);
+          var elem160 = null;
+          elem160 = input.readI64();
+          this.selector_ids.push(elem160);
         }
         input.readSetEnd();
       } else {
@@ -1705,19 +2492,19 @@ Point.prototype.read = function(input) {
       break;
       case 14:
       if (ftype == Thrift.Type.SET) {
-        var _size103 = 0;
-        var _rtmp3107;
+        var _size161 = 0;
+        var _rtmp3165;
         this.mileages = [];
-        var _etype106 = 0;
-        _rtmp3107 = input.readSetBegin();
-        _etype106 = _rtmp3107.etype;
-        _size103 = _rtmp3107.size;
-        for (var _i108 = 0; _i108 < _size103; ++_i108)
+        var _etype164 = 0;
+        _rtmp3165 = input.readSetBegin();
+        _etype164 = _rtmp3165.etype;
+        _size161 = _rtmp3165.size;
+        for (var _i166 = 0; _i166 < _size161; ++_i166)
         {
-          var elem109 = null;
-          elem109 = new ttypes.Mileage();
-          elem109.read(input);
-          this.mileages.push(elem109);
+          var elem167 = null;
+          elem167 = new ttypes.Mileage();
+          elem167.read(input);
+          this.mileages.push(elem167);
         }
         input.readSetEnd();
       } else {
@@ -1795,12 +2582,12 @@ Point.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 11);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter110 in this.tags)
+    for (var iter168 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter110))
+      if (this.tags.hasOwnProperty(iter168))
       {
-        iter110 = this.tags[iter110];
-        iter110.write(output);
+        iter168 = this.tags[iter168];
+        iter168.write(output);
       }
     }
     output.writeSetEnd();
@@ -1809,12 +2596,12 @@ Point.prototype.write = function(output) {
   if (this.resources !== null && this.resources !== undefined) {
     output.writeFieldBegin('resources', Thrift.Type.SET, 12);
     output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
-    for (var iter111 in this.resources)
+    for (var iter169 in this.resources)
     {
-      if (this.resources.hasOwnProperty(iter111))
+      if (this.resources.hasOwnProperty(iter169))
       {
-        iter111 = this.resources[iter111];
-        iter111.write(output);
+        iter169 = this.resources[iter169];
+        iter169.write(output);
       }
     }
     output.writeSetEnd();
@@ -1823,12 +2610,12 @@ Point.prototype.write = function(output) {
   if (this.selector_ids !== null && this.selector_ids !== undefined) {
     output.writeFieldBegin('selector_ids', Thrift.Type.SET, 13);
     output.writeSetBegin(Thrift.Type.I64, this.selector_ids.length);
-    for (var iter112 in this.selector_ids)
+    for (var iter170 in this.selector_ids)
     {
-      if (this.selector_ids.hasOwnProperty(iter112))
+      if (this.selector_ids.hasOwnProperty(iter170))
       {
-        iter112 = this.selector_ids[iter112];
-        output.writeI64(iter112);
+        iter170 = this.selector_ids[iter170];
+        output.writeI64(iter170);
       }
     }
     output.writeSetEnd();
@@ -1837,12 +2624,12 @@ Point.prototype.write = function(output) {
   if (this.mileages !== null && this.mileages !== undefined) {
     output.writeFieldBegin('mileages', Thrift.Type.SET, 14);
     output.writeSetBegin(Thrift.Type.STRUCT, this.mileages.length);
-    for (var iter113 in this.mileages)
+    for (var iter171 in this.mileages)
     {
-      if (this.mileages.hasOwnProperty(iter113))
+      if (this.mileages.hasOwnProperty(iter171))
       {
-        iter113 = this.mileages[iter113];
-        iter113.write(output);
+        iter171 = this.mileages[iter171];
+        iter171.write(output);
       }
     }
     output.writeSetEnd();
@@ -1912,19 +2699,19 @@ UserLocationHistory.prototype.read = function(input) {
       break;
       case 3:
       if (ftype == Thrift.Type.LIST) {
-        var _size114 = 0;
-        var _rtmp3118;
+        var _size172 = 0;
+        var _rtmp3176;
         this.crumbs = [];
-        var _etype117 = 0;
-        _rtmp3118 = input.readListBegin();
-        _etype117 = _rtmp3118.etype;
-        _size114 = _rtmp3118.size;
-        for (var _i119 = 0; _i119 < _size114; ++_i119)
+        var _etype175 = 0;
+        _rtmp3176 = input.readListBegin();
+        _etype175 = _rtmp3176.etype;
+        _size172 = _rtmp3176.size;
+        for (var _i177 = 0; _i177 < _size172; ++_i177)
         {
-          var elem120 = null;
-          elem120 = new ttypes.Crumb();
-          elem120.read(input);
-          this.crumbs.push(elem120);
+          var elem178 = null;
+          elem178 = new ttypes.Crumb();
+          elem178.read(input);
+          this.crumbs.push(elem178);
         }
         input.readListEnd();
       } else {
@@ -1933,18 +2720,18 @@ UserLocationHistory.prototype.read = function(input) {
       break;
       case 4:
       if (ftype == Thrift.Type.SET) {
-        var _size121 = 0;
-        var _rtmp3125;
+        var _size179 = 0;
+        var _rtmp3183;
         this.selector_ids = [];
-        var _etype124 = 0;
-        _rtmp3125 = input.readSetBegin();
-        _etype124 = _rtmp3125.etype;
-        _size121 = _rtmp3125.size;
-        for (var _i126 = 0; _i126 < _size121; ++_i126)
+        var _etype182 = 0;
+        _rtmp3183 = input.readSetBegin();
+        _etype182 = _rtmp3183.etype;
+        _size179 = _rtmp3183.size;
+        for (var _i184 = 0; _i184 < _size179; ++_i184)
         {
-          var elem127 = null;
-          elem127 = input.readI64();
-          this.selector_ids.push(elem127);
+          var elem185 = null;
+          elem185 = input.readI64();
+          this.selector_ids.push(elem185);
         }
         input.readSetEnd();
       } else {
@@ -1982,12 +2769,12 @@ UserLocationHistory.prototype.write = function(output) {
   if (this.crumbs !== null && this.crumbs !== undefined) {
     output.writeFieldBegin('crumbs', Thrift.Type.LIST, 3);
     output.writeListBegin(Thrift.Type.STRUCT, this.crumbs.length);
-    for (var iter128 in this.crumbs)
+    for (var iter186 in this.crumbs)
     {
-      if (this.crumbs.hasOwnProperty(iter128))
+      if (this.crumbs.hasOwnProperty(iter186))
       {
-        iter128 = this.crumbs[iter128];
-        iter128.write(output);
+        iter186 = this.crumbs[iter186];
+        iter186.write(output);
       }
     }
     output.writeListEnd();
@@ -1996,12 +2783,12 @@ UserLocationHistory.prototype.write = function(output) {
   if (this.selector_ids !== null && this.selector_ids !== undefined) {
     output.writeFieldBegin('selector_ids', Thrift.Type.SET, 4);
     output.writeSetBegin(Thrift.Type.I64, this.selector_ids.length);
-    for (var iter129 in this.selector_ids)
+    for (var iter187 in this.selector_ids)
     {
-      if (this.selector_ids.hasOwnProperty(iter129))
+      if (this.selector_ids.hasOwnProperty(iter187))
       {
-        iter129 = this.selector_ids[iter129];
-        output.writeI64(iter129);
+        iter187 = this.selector_ids[iter187];
+        output.writeI64(iter187);
       }
     }
     output.writeSetEnd();
@@ -2009,6 +2796,305 @@ UserLocationHistory.prototype.write = function(output) {
   }
   if (this.deleted !== null && this.deleted !== undefined) {
     output.writeFieldBegin('deleted', Thrift.Type.I64, 5);
+    output.writeI64(this.deleted);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var PathPoint = module.exports.PathPoint = function(args) {
+  this.id = null;
+  this.version = null;
+  this.late6 = null;
+  this.lone6 = null;
+  this.eleme2 = null;
+  this.mainlinemileagee5 = null;
+  this.zlfo = null;
+  if (args) {
+    if (args.id !== undefined && args.id !== null) {
+      this.id = args.id;
+    }
+    if (args.version !== undefined && args.version !== null) {
+      this.version = args.version;
+    }
+    if (args.late6 !== undefined && args.late6 !== null) {
+      this.late6 = args.late6;
+    }
+    if (args.lone6 !== undefined && args.lone6 !== null) {
+      this.lone6 = args.lone6;
+    }
+    if (args.eleme2 !== undefined && args.eleme2 !== null) {
+      this.eleme2 = args.eleme2;
+    }
+    if (args.mainlinemileagee5 !== undefined && args.mainlinemileagee5 !== null) {
+      this.mainlinemileagee5 = args.mainlinemileagee5;
+    }
+    if (args.zlfo !== undefined && args.zlfo !== null) {
+      this.zlfo = args.zlfo;
+    }
+  }
+};
+PathPoint.prototype = {};
+PathPoint.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I64) {
+        this.id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I64) {
+        this.version = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.I32) {
+        this.late6 = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 4:
+      if (ftype == Thrift.Type.I32) {
+        this.lone6 = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 5:
+      if (ftype == Thrift.Type.I32) {
+        this.eleme2 = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 6:
+      if (ftype == Thrift.Type.I32) {
+        this.mainlinemileagee5 = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 7:
+      if (ftype == Thrift.Type.I32) {
+        this.zlfo = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+PathPoint.prototype.write = function(output) {
+  output.writeStructBegin('PathPoint');
+  if (this.id !== null && this.id !== undefined) {
+    output.writeFieldBegin('id', Thrift.Type.I64, 1);
+    output.writeI64(this.id);
+    output.writeFieldEnd();
+  }
+  if (this.version !== null && this.version !== undefined) {
+    output.writeFieldBegin('version', Thrift.Type.I64, 2);
+    output.writeI64(this.version);
+    output.writeFieldEnd();
+  }
+  if (this.late6 !== null && this.late6 !== undefined) {
+    output.writeFieldBegin('late6', Thrift.Type.I32, 3);
+    output.writeI32(this.late6);
+    output.writeFieldEnd();
+  }
+  if (this.lone6 !== null && this.lone6 !== undefined) {
+    output.writeFieldBegin('lone6', Thrift.Type.I32, 4);
+    output.writeI32(this.lone6);
+    output.writeFieldEnd();
+  }
+  if (this.eleme2 !== null && this.eleme2 !== undefined) {
+    output.writeFieldBegin('eleme2', Thrift.Type.I32, 5);
+    output.writeI32(this.eleme2);
+    output.writeFieldEnd();
+  }
+  if (this.mainlinemileagee5 !== null && this.mainlinemileagee5 !== undefined) {
+    output.writeFieldBegin('mainlinemileagee5', Thrift.Type.I32, 6);
+    output.writeI32(this.mainlinemileagee5);
+    output.writeFieldEnd();
+  }
+  if (this.zlfo !== null && this.zlfo !== undefined) {
+    output.writeFieldBegin('zlfo', Thrift.Type.I32, 7);
+    output.writeI32(this.zlfo);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var Path = module.exports.Path = function(args) {
+  this.id = null;
+  this.version = null;
+  this.changeset_id = null;
+  this.owner_id = null;
+  this.pathpoints = null;
+  this.deleted = null;
+  if (args) {
+    if (args.id !== undefined && args.id !== null) {
+      this.id = args.id;
+    }
+    if (args.version !== undefined && args.version !== null) {
+      this.version = args.version;
+    }
+    if (args.changeset_id !== undefined && args.changeset_id !== null) {
+      this.changeset_id = args.changeset_id;
+    }
+    if (args.owner_id !== undefined && args.owner_id !== null) {
+      this.owner_id = args.owner_id;
+    }
+    if (args.pathpoints !== undefined && args.pathpoints !== null) {
+      this.pathpoints = Thrift.copyList(args.pathpoints, [ttypes.PathPoint]);
+    }
+    if (args.deleted !== undefined && args.deleted !== null) {
+      this.deleted = args.deleted;
+    }
+  }
+};
+Path.prototype = {};
+Path.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.I64) {
+        this.id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I64) {
+        this.version = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.I64) {
+        this.changeset_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 4:
+      if (ftype == Thrift.Type.I64) {
+        this.owner_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 5:
+      if (ftype == Thrift.Type.LIST) {
+        var _size188 = 0;
+        var _rtmp3192;
+        this.pathpoints = [];
+        var _etype191 = 0;
+        _rtmp3192 = input.readListBegin();
+        _etype191 = _rtmp3192.etype;
+        _size188 = _rtmp3192.size;
+        for (var _i193 = 0; _i193 < _size188; ++_i193)
+        {
+          var elem194 = null;
+          elem194 = new ttypes.PathPoint();
+          elem194.read(input);
+          this.pathpoints.push(elem194);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 6:
+      if (ftype == Thrift.Type.I64) {
+        this.deleted = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+Path.prototype.write = function(output) {
+  output.writeStructBegin('Path');
+  if (this.id !== null && this.id !== undefined) {
+    output.writeFieldBegin('id', Thrift.Type.I64, 1);
+    output.writeI64(this.id);
+    output.writeFieldEnd();
+  }
+  if (this.version !== null && this.version !== undefined) {
+    output.writeFieldBegin('version', Thrift.Type.I64, 2);
+    output.writeI64(this.version);
+    output.writeFieldEnd();
+  }
+  if (this.changeset_id !== null && this.changeset_id !== undefined) {
+    output.writeFieldBegin('changeset_id', Thrift.Type.I64, 3);
+    output.writeI64(this.changeset_id);
+    output.writeFieldEnd();
+  }
+  if (this.owner_id !== null && this.owner_id !== undefined) {
+    output.writeFieldBegin('owner_id', Thrift.Type.I64, 4);
+    output.writeI64(this.owner_id);
+    output.writeFieldEnd();
+  }
+  if (this.pathpoints !== null && this.pathpoints !== undefined) {
+    output.writeFieldBegin('pathpoints', Thrift.Type.LIST, 5);
+    output.writeListBegin(Thrift.Type.STRUCT, this.pathpoints.length);
+    for (var iter195 in this.pathpoints)
+    {
+      if (this.pathpoints.hasOwnProperty(iter195))
+      {
+        iter195 = this.pathpoints[iter195];
+        iter195.write(output);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  if (this.deleted !== null && this.deleted !== undefined) {
+    output.writeFieldBegin('deleted', Thrift.Type.I64, 6);
     output.writeI64(this.deleted);
     output.writeFieldEnd();
   }
@@ -2175,19 +3261,19 @@ Track.prototype.read = function(input) {
       break;
       case 12:
       if (ftype == Thrift.Type.SET) {
-        var _size130 = 0;
-        var _rtmp3134;
+        var _size196 = 0;
+        var _rtmp3200;
         this.tags = [];
-        var _etype133 = 0;
-        _rtmp3134 = input.readSetBegin();
-        _etype133 = _rtmp3134.etype;
-        _size130 = _rtmp3134.size;
-        for (var _i135 = 0; _i135 < _size130; ++_i135)
+        var _etype199 = 0;
+        _rtmp3200 = input.readSetBegin();
+        _etype199 = _rtmp3200.etype;
+        _size196 = _rtmp3200.size;
+        for (var _i201 = 0; _i201 < _size196; ++_i201)
         {
-          var elem136 = null;
-          elem136 = new ttypes.Tag();
-          elem136.read(input);
-          this.tags.push(elem136);
+          var elem202 = null;
+          elem202 = new ttypes.Tag();
+          elem202.read(input);
+          this.tags.push(elem202);
         }
         input.readSetEnd();
       } else {
@@ -2196,19 +3282,19 @@ Track.prototype.read = function(input) {
       break;
       case 13:
       if (ftype == Thrift.Type.SET) {
-        var _size137 = 0;
-        var _rtmp3141;
+        var _size203 = 0;
+        var _rtmp3207;
         this.resources = [];
-        var _etype140 = 0;
-        _rtmp3141 = input.readSetBegin();
-        _etype140 = _rtmp3141.etype;
-        _size137 = _rtmp3141.size;
-        for (var _i142 = 0; _i142 < _size137; ++_i142)
+        var _etype206 = 0;
+        _rtmp3207 = input.readSetBegin();
+        _etype206 = _rtmp3207.etype;
+        _size203 = _rtmp3207.size;
+        for (var _i208 = 0; _i208 < _size203; ++_i208)
         {
-          var elem143 = null;
-          elem143 = new ttypes.Resource();
-          elem143.read(input);
-          this.resources.push(elem143);
+          var elem209 = null;
+          elem209 = new ttypes.Resource();
+          elem209.read(input);
+          this.resources.push(elem209);
         }
         input.readSetEnd();
       } else {
@@ -2217,18 +3303,18 @@ Track.prototype.read = function(input) {
       break;
       case 14:
       if (ftype == Thrift.Type.SET) {
-        var _size144 = 0;
-        var _rtmp3148;
+        var _size210 = 0;
+        var _rtmp3214;
         this.selector_ids = [];
-        var _etype147 = 0;
-        _rtmp3148 = input.readSetBegin();
-        _etype147 = _rtmp3148.etype;
-        _size144 = _rtmp3148.size;
-        for (var _i149 = 0; _i149 < _size144; ++_i149)
+        var _etype213 = 0;
+        _rtmp3214 = input.readSetBegin();
+        _etype213 = _rtmp3214.etype;
+        _size210 = _rtmp3214.size;
+        for (var _i215 = 0; _i215 < _size210; ++_i215)
         {
-          var elem150 = null;
-          elem150 = input.readI64();
-          this.selector_ids.push(elem150);
+          var elem216 = null;
+          elem216 = input.readI64();
+          this.selector_ids.push(elem216);
         }
         input.readSetEnd();
       } else {
@@ -2311,12 +3397,12 @@ Track.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 12);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter151 in this.tags)
+    for (var iter217 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter151))
+      if (this.tags.hasOwnProperty(iter217))
       {
-        iter151 = this.tags[iter151];
-        iter151.write(output);
+        iter217 = this.tags[iter217];
+        iter217.write(output);
       }
     }
     output.writeSetEnd();
@@ -2325,12 +3411,12 @@ Track.prototype.write = function(output) {
   if (this.resources !== null && this.resources !== undefined) {
     output.writeFieldBegin('resources', Thrift.Type.SET, 13);
     output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
-    for (var iter152 in this.resources)
+    for (var iter218 in this.resources)
     {
-      if (this.resources.hasOwnProperty(iter152))
+      if (this.resources.hasOwnProperty(iter218))
       {
-        iter152 = this.resources[iter152];
-        iter152.write(output);
+        iter218 = this.resources[iter218];
+        iter218.write(output);
       }
     }
     output.writeSetEnd();
@@ -2339,12 +3425,12 @@ Track.prototype.write = function(output) {
   if (this.selector_ids !== null && this.selector_ids !== undefined) {
     output.writeFieldBegin('selector_ids', Thrift.Type.SET, 14);
     output.writeSetBegin(Thrift.Type.I64, this.selector_ids.length);
-    for (var iter153 in this.selector_ids)
+    for (var iter219 in this.selector_ids)
     {
-      if (this.selector_ids.hasOwnProperty(iter153))
+      if (this.selector_ids.hasOwnProperty(iter219))
       {
-        iter153 = this.selector_ids[iter153];
-        output.writeI64(iter153);
+        iter219 = this.selector_ids[iter219];
+        output.writeI64(iter219);
       }
     }
     output.writeSetEnd();
@@ -2353,305 +3439,6 @@ Track.prototype.write = function(output) {
   if (this.deleted !== null && this.deleted !== undefined) {
     output.writeFieldBegin('deleted', Thrift.Type.I64, 15);
     output.writeI64(this.deleted);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-var Path = module.exports.Path = function(args) {
-  this.id = null;
-  this.version = null;
-  this.changeset_id = null;
-  this.owner_id = null;
-  this.pathpoints = null;
-  this.deleted = null;
-  if (args) {
-    if (args.id !== undefined && args.id !== null) {
-      this.id = args.id;
-    }
-    if (args.version !== undefined && args.version !== null) {
-      this.version = args.version;
-    }
-    if (args.changeset_id !== undefined && args.changeset_id !== null) {
-      this.changeset_id = args.changeset_id;
-    }
-    if (args.owner_id !== undefined && args.owner_id !== null) {
-      this.owner_id = args.owner_id;
-    }
-    if (args.pathpoints !== undefined && args.pathpoints !== null) {
-      this.pathpoints = Thrift.copyList(args.pathpoints, [null]);
-    }
-    if (args.deleted !== undefined && args.deleted !== null) {
-      this.deleted = args.deleted;
-    }
-  }
-};
-Path.prototype = {};
-Path.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.I64) {
-        this.id = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
-      if (ftype == Thrift.Type.I64) {
-        this.version = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 3:
-      if (ftype == Thrift.Type.I64) {
-        this.changeset_id = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 4:
-      if (ftype == Thrift.Type.I64) {
-        this.owner_id = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 5:
-      if (ftype == Thrift.Type.LIST) {
-        var _size154 = 0;
-        var _rtmp3158;
-        this.pathpoints = [];
-        var _etype157 = 0;
-        _rtmp3158 = input.readListBegin();
-        _etype157 = _rtmp3158.etype;
-        _size154 = _rtmp3158.size;
-        for (var _i159 = 0; _i159 < _size154; ++_i159)
-        {
-          var elem160 = null;
-          elem160 = new ttypes.PathPoint();
-          elem160.read(input);
-          this.pathpoints.push(elem160);
-        }
-        input.readListEnd();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 6:
-      if (ftype == Thrift.Type.I64) {
-        this.deleted = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Path.prototype.write = function(output) {
-  output.writeStructBegin('Path');
-  if (this.id !== null && this.id !== undefined) {
-    output.writeFieldBegin('id', Thrift.Type.I64, 1);
-    output.writeI64(this.id);
-    output.writeFieldEnd();
-  }
-  if (this.version !== null && this.version !== undefined) {
-    output.writeFieldBegin('version', Thrift.Type.I64, 2);
-    output.writeI64(this.version);
-    output.writeFieldEnd();
-  }
-  if (this.changeset_id !== null && this.changeset_id !== undefined) {
-    output.writeFieldBegin('changeset_id', Thrift.Type.I64, 3);
-    output.writeI64(this.changeset_id);
-    output.writeFieldEnd();
-  }
-  if (this.owner_id !== null && this.owner_id !== undefined) {
-    output.writeFieldBegin('owner_id', Thrift.Type.I64, 4);
-    output.writeI64(this.owner_id);
-    output.writeFieldEnd();
-  }
-  if (this.pathpoints !== null && this.pathpoints !== undefined) {
-    output.writeFieldBegin('pathpoints', Thrift.Type.LIST, 5);
-    output.writeListBegin(Thrift.Type.STRUCT, this.pathpoints.length);
-    for (var iter161 in this.pathpoints)
-    {
-      if (this.pathpoints.hasOwnProperty(iter161))
-      {
-        iter161 = this.pathpoints[iter161];
-        iter161.write(output);
-      }
-    }
-    output.writeListEnd();
-    output.writeFieldEnd();
-  }
-  if (this.deleted !== null && this.deleted !== undefined) {
-    output.writeFieldBegin('deleted', Thrift.Type.I64, 6);
-    output.writeI64(this.deleted);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-var PathPoint = module.exports.PathPoint = function(args) {
-  this.id = null;
-  this.version = null;
-  this.late6 = null;
-  this.lone6 = null;
-  this.eleme2 = null;
-  this.mainlinemileagee5 = null;
-  this.zlfo = null;
-  if (args) {
-    if (args.id !== undefined && args.id !== null) {
-      this.id = args.id;
-    }
-    if (args.version !== undefined && args.version !== null) {
-      this.version = args.version;
-    }
-    if (args.late6 !== undefined && args.late6 !== null) {
-      this.late6 = args.late6;
-    }
-    if (args.lone6 !== undefined && args.lone6 !== null) {
-      this.lone6 = args.lone6;
-    }
-    if (args.eleme2 !== undefined && args.eleme2 !== null) {
-      this.eleme2 = args.eleme2;
-    }
-    if (args.mainlinemileagee5 !== undefined && args.mainlinemileagee5 !== null) {
-      this.mainlinemileagee5 = args.mainlinemileagee5;
-    }
-    if (args.zlfo !== undefined && args.zlfo !== null) {
-      this.zlfo = args.zlfo;
-    }
-  }
-};
-PathPoint.prototype = {};
-PathPoint.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.I64) {
-        this.id = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
-      if (ftype == Thrift.Type.I64) {
-        this.version = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 3:
-      if (ftype == Thrift.Type.I32) {
-        this.late6 = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 4:
-      if (ftype == Thrift.Type.I32) {
-        this.lone6 = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 5:
-      if (ftype == Thrift.Type.I32) {
-        this.eleme2 = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 6:
-      if (ftype == Thrift.Type.I32) {
-        this.mainlinemileagee5 = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 7:
-      if (ftype == Thrift.Type.I32) {
-        this.zlfo = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-PathPoint.prototype.write = function(output) {
-  output.writeStructBegin('PathPoint');
-  if (this.id !== null && this.id !== undefined) {
-    output.writeFieldBegin('id', Thrift.Type.I64, 1);
-    output.writeI64(this.id);
-    output.writeFieldEnd();
-  }
-  if (this.version !== null && this.version !== undefined) {
-    output.writeFieldBegin('version', Thrift.Type.I64, 2);
-    output.writeI64(this.version);
-    output.writeFieldEnd();
-  }
-  if (this.late6 !== null && this.late6 !== undefined) {
-    output.writeFieldBegin('late6', Thrift.Type.I32, 3);
-    output.writeI32(this.late6);
-    output.writeFieldEnd();
-  }
-  if (this.lone6 !== null && this.lone6 !== undefined) {
-    output.writeFieldBegin('lone6', Thrift.Type.I32, 4);
-    output.writeI32(this.lone6);
-    output.writeFieldEnd();
-  }
-  if (this.eleme2 !== null && this.eleme2 !== undefined) {
-    output.writeFieldBegin('eleme2', Thrift.Type.I32, 5);
-    output.writeI32(this.eleme2);
-    output.writeFieldEnd();
-  }
-  if (this.mainlinemileagee5 !== null && this.mainlinemileagee5 !== undefined) {
-    output.writeFieldBegin('mainlinemileagee5', Thrift.Type.I32, 6);
-    output.writeI32(this.mainlinemileagee5);
-    output.writeFieldEnd();
-  }
-  if (this.zlfo !== null && this.zlfo !== undefined) {
-    output.writeFieldBegin('zlfo', Thrift.Type.I32, 7);
-    output.writeI32(this.zlfo);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -2845,19 +3632,19 @@ Relation.prototype.read = function(input) {
       break;
       case 5:
       if (ftype == Thrift.Type.LIST) {
-        var _size162 = 0;
-        var _rtmp3166;
+        var _size220 = 0;
+        var _rtmp3224;
         this.members = [];
-        var _etype165 = 0;
-        _rtmp3166 = input.readListBegin();
-        _etype165 = _rtmp3166.etype;
-        _size162 = _rtmp3166.size;
-        for (var _i167 = 0; _i167 < _size162; ++_i167)
+        var _etype223 = 0;
+        _rtmp3224 = input.readListBegin();
+        _etype223 = _rtmp3224.etype;
+        _size220 = _rtmp3224.size;
+        for (var _i225 = 0; _i225 < _size220; ++_i225)
         {
-          var elem168 = null;
-          elem168 = new ttypes.RelationMember();
-          elem168.read(input);
-          this.members.push(elem168);
+          var elem226 = null;
+          elem226 = new ttypes.RelationMember();
+          elem226.read(input);
+          this.members.push(elem226);
         }
         input.readListEnd();
       } else {
@@ -2866,19 +3653,19 @@ Relation.prototype.read = function(input) {
       break;
       case 6:
       if (ftype == Thrift.Type.SET) {
-        var _size169 = 0;
-        var _rtmp3173;
+        var _size227 = 0;
+        var _rtmp3231;
         this.tags = [];
-        var _etype172 = 0;
-        _rtmp3173 = input.readSetBegin();
-        _etype172 = _rtmp3173.etype;
-        _size169 = _rtmp3173.size;
-        for (var _i174 = 0; _i174 < _size169; ++_i174)
+        var _etype230 = 0;
+        _rtmp3231 = input.readSetBegin();
+        _etype230 = _rtmp3231.etype;
+        _size227 = _rtmp3231.size;
+        for (var _i232 = 0; _i232 < _size227; ++_i232)
         {
-          var elem175 = null;
-          elem175 = new ttypes.Tag();
-          elem175.read(input);
-          this.tags.push(elem175);
+          var elem233 = null;
+          elem233 = new ttypes.Tag();
+          elem233.read(input);
+          this.tags.push(elem233);
         }
         input.readSetEnd();
       } else {
@@ -2887,19 +3674,19 @@ Relation.prototype.read = function(input) {
       break;
       case 7:
       if (ftype == Thrift.Type.SET) {
-        var _size176 = 0;
-        var _rtmp3180;
+        var _size234 = 0;
+        var _rtmp3238;
         this.resources = [];
-        var _etype179 = 0;
-        _rtmp3180 = input.readSetBegin();
-        _etype179 = _rtmp3180.etype;
-        _size176 = _rtmp3180.size;
-        for (var _i181 = 0; _i181 < _size176; ++_i181)
+        var _etype237 = 0;
+        _rtmp3238 = input.readSetBegin();
+        _etype237 = _rtmp3238.etype;
+        _size234 = _rtmp3238.size;
+        for (var _i239 = 0; _i239 < _size234; ++_i239)
         {
-          var elem182 = null;
-          elem182 = new ttypes.Resource();
-          elem182.read(input);
-          this.resources.push(elem182);
+          var elem240 = null;
+          elem240 = new ttypes.Resource();
+          elem240.read(input);
+          this.resources.push(elem240);
         }
         input.readSetEnd();
       } else {
@@ -2908,18 +3695,18 @@ Relation.prototype.read = function(input) {
       break;
       case 8:
       if (ftype == Thrift.Type.SET) {
-        var _size183 = 0;
-        var _rtmp3187;
+        var _size241 = 0;
+        var _rtmp3245;
         this.selector_ids = [];
-        var _etype186 = 0;
-        _rtmp3187 = input.readSetBegin();
-        _etype186 = _rtmp3187.etype;
-        _size183 = _rtmp3187.size;
-        for (var _i188 = 0; _i188 < _size183; ++_i188)
+        var _etype244 = 0;
+        _rtmp3245 = input.readSetBegin();
+        _etype244 = _rtmp3245.etype;
+        _size241 = _rtmp3245.size;
+        for (var _i246 = 0; _i246 < _size241; ++_i246)
         {
-          var elem189 = null;
-          elem189 = input.readI64();
-          this.selector_ids.push(elem189);
+          var elem247 = null;
+          elem247 = input.readI64();
+          this.selector_ids.push(elem247);
         }
         input.readSetEnd();
       } else {
@@ -2928,19 +3715,19 @@ Relation.prototype.read = function(input) {
       break;
       case 9:
       if (ftype == Thrift.Type.SET) {
-        var _size190 = 0;
-        var _rtmp3194;
+        var _size248 = 0;
+        var _rtmp3252;
         this.mileages = [];
-        var _etype193 = 0;
-        _rtmp3194 = input.readSetBegin();
-        _etype193 = _rtmp3194.etype;
-        _size190 = _rtmp3194.size;
-        for (var _i195 = 0; _i195 < _size190; ++_i195)
+        var _etype251 = 0;
+        _rtmp3252 = input.readSetBegin();
+        _etype251 = _rtmp3252.etype;
+        _size248 = _rtmp3252.size;
+        for (var _i253 = 0; _i253 < _size248; ++_i253)
         {
-          var elem196 = null;
-          elem196 = new ttypes.Mileage();
-          elem196.read(input);
-          this.mileages.push(elem196);
+          var elem254 = null;
+          elem254 = new ttypes.Mileage();
+          elem254.read(input);
+          this.mileages.push(elem254);
         }
         input.readSetEnd();
       } else {
@@ -2988,12 +3775,12 @@ Relation.prototype.write = function(output) {
   if (this.members !== null && this.members !== undefined) {
     output.writeFieldBegin('members', Thrift.Type.LIST, 5);
     output.writeListBegin(Thrift.Type.STRUCT, this.members.length);
-    for (var iter197 in this.members)
+    for (var iter255 in this.members)
     {
-      if (this.members.hasOwnProperty(iter197))
+      if (this.members.hasOwnProperty(iter255))
       {
-        iter197 = this.members[iter197];
-        iter197.write(output);
+        iter255 = this.members[iter255];
+        iter255.write(output);
       }
     }
     output.writeListEnd();
@@ -3002,12 +3789,12 @@ Relation.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 6);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter198 in this.tags)
+    for (var iter256 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter198))
+      if (this.tags.hasOwnProperty(iter256))
       {
-        iter198 = this.tags[iter198];
-        iter198.write(output);
+        iter256 = this.tags[iter256];
+        iter256.write(output);
       }
     }
     output.writeSetEnd();
@@ -3016,12 +3803,12 @@ Relation.prototype.write = function(output) {
   if (this.resources !== null && this.resources !== undefined) {
     output.writeFieldBegin('resources', Thrift.Type.SET, 7);
     output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
-    for (var iter199 in this.resources)
+    for (var iter257 in this.resources)
     {
-      if (this.resources.hasOwnProperty(iter199))
+      if (this.resources.hasOwnProperty(iter257))
       {
-        iter199 = this.resources[iter199];
-        iter199.write(output);
+        iter257 = this.resources[iter257];
+        iter257.write(output);
       }
     }
     output.writeSetEnd();
@@ -3030,12 +3817,12 @@ Relation.prototype.write = function(output) {
   if (this.selector_ids !== null && this.selector_ids !== undefined) {
     output.writeFieldBegin('selector_ids', Thrift.Type.SET, 8);
     output.writeSetBegin(Thrift.Type.I64, this.selector_ids.length);
-    for (var iter200 in this.selector_ids)
+    for (var iter258 in this.selector_ids)
     {
-      if (this.selector_ids.hasOwnProperty(iter200))
+      if (this.selector_ids.hasOwnProperty(iter258))
       {
-        iter200 = this.selector_ids[iter200];
-        output.writeI64(iter200);
+        iter258 = this.selector_ids[iter258];
+        output.writeI64(iter258);
       }
     }
     output.writeSetEnd();
@@ -3044,12 +3831,12 @@ Relation.prototype.write = function(output) {
   if (this.mileages !== null && this.mileages !== undefined) {
     output.writeFieldBegin('mileages', Thrift.Type.SET, 9);
     output.writeSetBegin(Thrift.Type.STRUCT, this.mileages.length);
-    for (var iter201 in this.mileages)
+    for (var iter259 in this.mileages)
     {
-      if (this.mileages.hasOwnProperty(iter201))
+      if (this.mileages.hasOwnProperty(iter259))
       {
-        iter201 = this.mileages[iter201];
-        iter201.write(output);
+        iter259 = this.mileages[iter259];
+        iter259.write(output);
       }
     }
     output.writeSetEnd();
@@ -3199,19 +3986,19 @@ Changeset.prototype.read = function(input) {
       break;
       case 11:
       if (ftype == Thrift.Type.SET) {
-        var _size202 = 0;
-        var _rtmp3206;
+        var _size260 = 0;
+        var _rtmp3264;
         this.tags = [];
-        var _etype205 = 0;
-        _rtmp3206 = input.readSetBegin();
-        _etype205 = _rtmp3206.etype;
-        _size202 = _rtmp3206.size;
-        for (var _i207 = 0; _i207 < _size202; ++_i207)
+        var _etype263 = 0;
+        _rtmp3264 = input.readSetBegin();
+        _etype263 = _rtmp3264.etype;
+        _size260 = _rtmp3264.size;
+        for (var _i265 = 0; _i265 < _size260; ++_i265)
         {
-          var elem208 = null;
-          elem208 = new ttypes.Tag();
-          elem208.read(input);
-          this.tags.push(elem208);
+          var elem266 = null;
+          elem266 = new ttypes.Tag();
+          elem266.read(input);
+          this.tags.push(elem266);
         }
         input.readSetEnd();
       } else {
@@ -3282,12 +4069,12 @@ Changeset.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 11);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter209 in this.tags)
+    for (var iter267 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter209))
+      if (this.tags.hasOwnProperty(iter267))
       {
-        iter209 = this.tags[iter209];
-        iter209.write(output);
+        iter267 = this.tags[iter267];
+        iter267.write(output);
       }
     }
     output.writeSetEnd();
@@ -3385,19 +4172,19 @@ Selector.prototype.read = function(input) {
       break;
       case 6:
       if (ftype == Thrift.Type.SET) {
-        var _size210 = 0;
-        var _rtmp3214;
+        var _size268 = 0;
+        var _rtmp3272;
         this.tags = [];
-        var _etype213 = 0;
-        _rtmp3214 = input.readSetBegin();
-        _etype213 = _rtmp3214.etype;
-        _size210 = _rtmp3214.size;
-        for (var _i215 = 0; _i215 < _size210; ++_i215)
+        var _etype271 = 0;
+        _rtmp3272 = input.readSetBegin();
+        _etype271 = _rtmp3272.etype;
+        _size268 = _rtmp3272.size;
+        for (var _i273 = 0; _i273 < _size268; ++_i273)
         {
-          var elem216 = null;
-          elem216 = new ttypes.Tag();
-          elem216.read(input);
-          this.tags.push(elem216);
+          var elem274 = null;
+          elem274 = new ttypes.Tag();
+          elem274.read(input);
+          this.tags.push(elem274);
         }
         input.readSetEnd();
       } else {
@@ -3406,19 +4193,19 @@ Selector.prototype.read = function(input) {
       break;
       case 7:
       if (ftype == Thrift.Type.SET) {
-        var _size217 = 0;
-        var _rtmp3221;
+        var _size275 = 0;
+        var _rtmp3279;
         this.resources = [];
-        var _etype220 = 0;
-        _rtmp3221 = input.readSetBegin();
-        _etype220 = _rtmp3221.etype;
-        _size217 = _rtmp3221.size;
-        for (var _i222 = 0; _i222 < _size217; ++_i222)
+        var _etype278 = 0;
+        _rtmp3279 = input.readSetBegin();
+        _etype278 = _rtmp3279.etype;
+        _size275 = _rtmp3279.size;
+        for (var _i280 = 0; _i280 < _size275; ++_i280)
         {
-          var elem223 = null;
-          elem223 = new ttypes.Resource();
-          elem223.read(input);
-          this.resources.push(elem223);
+          var elem281 = null;
+          elem281 = new ttypes.Resource();
+          elem281.read(input);
+          this.resources.push(elem281);
         }
         input.readSetEnd();
       } else {
@@ -3471,12 +4258,12 @@ Selector.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 6);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter224 in this.tags)
+    for (var iter282 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter224))
+      if (this.tags.hasOwnProperty(iter282))
       {
-        iter224 = this.tags[iter224];
-        iter224.write(output);
+        iter282 = this.tags[iter282];
+        iter282.write(output);
       }
     }
     output.writeSetEnd();
@@ -3485,12 +4272,12 @@ Selector.prototype.write = function(output) {
   if (this.resources !== null && this.resources !== undefined) {
     output.writeFieldBegin('resources', Thrift.Type.SET, 7);
     output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
-    for (var iter225 in this.resources)
+    for (var iter283 in this.resources)
     {
-      if (this.resources.hasOwnProperty(iter225))
+      if (this.resources.hasOwnProperty(iter283))
       {
-        iter225 = this.resources[iter225];
-        iter225.write(output);
+        iter283 = this.resources[iter283];
+        iter283.write(output);
       }
     }
     output.writeSetEnd();
@@ -3638,19 +4425,19 @@ Datastatus.prototype.read = function(input) {
       break;
       case 9:
       if (ftype == Thrift.Type.SET) {
-        var _size226 = 0;
-        var _rtmp3230;
+        var _size284 = 0;
+        var _rtmp3288;
         this.tags = [];
-        var _etype229 = 0;
-        _rtmp3230 = input.readSetBegin();
-        _etype229 = _rtmp3230.etype;
-        _size226 = _rtmp3230.size;
-        for (var _i231 = 0; _i231 < _size226; ++_i231)
+        var _etype287 = 0;
+        _rtmp3288 = input.readSetBegin();
+        _etype287 = _rtmp3288.etype;
+        _size284 = _rtmp3288.size;
+        for (var _i289 = 0; _i289 < _size284; ++_i289)
         {
-          var elem232 = null;
-          elem232 = new ttypes.Tag();
-          elem232.read(input);
-          this.tags.push(elem232);
+          var elem290 = null;
+          elem290 = new ttypes.Tag();
+          elem290.read(input);
+          this.tags.push(elem290);
         }
         input.readSetEnd();
       } else {
@@ -3659,19 +4446,19 @@ Datastatus.prototype.read = function(input) {
       break;
       case 10:
       if (ftype == Thrift.Type.SET) {
-        var _size233 = 0;
-        var _rtmp3237;
+        var _size291 = 0;
+        var _rtmp3295;
         this.resources = [];
-        var _etype236 = 0;
-        _rtmp3237 = input.readSetBegin();
-        _etype236 = _rtmp3237.etype;
-        _size233 = _rtmp3237.size;
-        for (var _i238 = 0; _i238 < _size233; ++_i238)
+        var _etype294 = 0;
+        _rtmp3295 = input.readSetBegin();
+        _etype294 = _rtmp3295.etype;
+        _size291 = _rtmp3295.size;
+        for (var _i296 = 0; _i296 < _size291; ++_i296)
         {
-          var elem239 = null;
-          elem239 = new ttypes.Resource();
-          elem239.read(input);
-          this.resources.push(elem239);
+          var elem297 = null;
+          elem297 = new ttypes.Resource();
+          elem297.read(input);
+          this.resources.push(elem297);
         }
         input.readSetEnd();
       } else {
@@ -3760,12 +4547,12 @@ Datastatus.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 9);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter240 in this.tags)
+    for (var iter298 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter240))
+      if (this.tags.hasOwnProperty(iter298))
       {
-        iter240 = this.tags[iter240];
-        iter240.write(output);
+        iter298 = this.tags[iter298];
+        iter298.write(output);
       }
     }
     output.writeSetEnd();
@@ -3774,12 +4561,12 @@ Datastatus.prototype.write = function(output) {
   if (this.resources !== null && this.resources !== undefined) {
     output.writeFieldBegin('resources', Thrift.Type.SET, 10);
     output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
-    for (var iter241 in this.resources)
+    for (var iter299 in this.resources)
     {
-      if (this.resources.hasOwnProperty(iter241))
+      if (this.resources.hasOwnProperty(iter299))
       {
-        iter241 = this.resources[iter241];
-        iter241.write(output);
+        iter299 = this.resources[iter299];
+        iter299.write(output);
       }
     }
     output.writeSetEnd();
@@ -3918,120 +4705,6 @@ AuthenticationResult.prototype.write = function(output) {
   if (this.response !== null && this.response !== undefined) {
     output.writeFieldBegin('response', Thrift.Type.STRUCT, 5);
     this.response.write(output);
-    output.writeFieldEnd();
-  }
-  output.writeFieldStop();
-  output.writeStructEnd();
-  return;
-};
-
-var Vote = module.exports.Vote = function(args) {
-  this.target_id = null;
-  this.target_version = null;
-  this.vote_type = null;
-  this.value = null;
-  this.timestamp = null;
-  if (args) {
-    if (args.target_id !== undefined && args.target_id !== null) {
-      this.target_id = args.target_id;
-    }
-    if (args.target_version !== undefined && args.target_version !== null) {
-      this.target_version = args.target_version;
-    }
-    if (args.vote_type !== undefined && args.vote_type !== null) {
-      this.vote_type = args.vote_type;
-    }
-    if (args.value !== undefined && args.value !== null) {
-      this.value = args.value;
-    }
-    if (args.timestamp !== undefined && args.timestamp !== null) {
-      this.timestamp = args.timestamp;
-    }
-  }
-};
-Vote.prototype = {};
-Vote.prototype.read = function(input) {
-  input.readStructBegin();
-  while (true)
-  {
-    var ret = input.readFieldBegin();
-    var fname = ret.fname;
-    var ftype = ret.ftype;
-    var fid = ret.fid;
-    if (ftype == Thrift.Type.STOP) {
-      break;
-    }
-    switch (fid)
-    {
-      case 1:
-      if (ftype == Thrift.Type.I64) {
-        this.target_id = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 2:
-      if (ftype == Thrift.Type.I64) {
-        this.target_version = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 3:
-      if (ftype == Thrift.Type.I32) {
-        this.vote_type = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 4:
-      if (ftype == Thrift.Type.I32) {
-        this.value = input.readI32();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      case 5:
-      if (ftype == Thrift.Type.I64) {
-        this.timestamp = input.readI64();
-      } else {
-        input.skip(ftype);
-      }
-      break;
-      default:
-        input.skip(ftype);
-    }
-    input.readFieldEnd();
-  }
-  input.readStructEnd();
-  return;
-};
-
-Vote.prototype.write = function(output) {
-  output.writeStructBegin('Vote');
-  if (this.target_id !== null && this.target_id !== undefined) {
-    output.writeFieldBegin('target_id', Thrift.Type.I64, 1);
-    output.writeI64(this.target_id);
-    output.writeFieldEnd();
-  }
-  if (this.target_version !== null && this.target_version !== undefined) {
-    output.writeFieldBegin('target_version', Thrift.Type.I64, 2);
-    output.writeI64(this.target_version);
-    output.writeFieldEnd();
-  }
-  if (this.vote_type !== null && this.vote_type !== undefined) {
-    output.writeFieldBegin('vote_type', Thrift.Type.I32, 3);
-    output.writeI32(this.vote_type);
-    output.writeFieldEnd();
-  }
-  if (this.value !== null && this.value !== undefined) {
-    output.writeFieldBegin('value', Thrift.Type.I32, 4);
-    output.writeI32(this.value);
-    output.writeFieldEnd();
-  }
-  if (this.timestamp !== null && this.timestamp !== undefined) {
-    output.writeFieldBegin('timestamp', Thrift.Type.I64, 5);
-    output.writeI64(this.timestamp);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -4520,6 +5193,8 @@ var Response = module.exports.Response = function(args) {
   this.selector = null;
   this.datastatus = null;
   this.analyticsAggregateSet = null;
+  this.notificationSet = null;
+  this.contestSet = null;
   if (args) {
     if (args.deleted !== undefined && args.deleted !== null) {
       this.deleted = args.deleted;
@@ -4550,6 +5225,12 @@ var Response = module.exports.Response = function(args) {
     }
     if (args.analyticsAggregateSet !== undefined && args.analyticsAggregateSet !== null) {
       this.analyticsAggregateSet = Thrift.copyList(args.analyticsAggregateSet, [ttypes.AnalyticsAggregate]);
+    }
+    if (args.notificationSet !== undefined && args.notificationSet !== null) {
+      this.notificationSet = Thrift.copyList(args.notificationSet, [ttypes.Notification]);
+    }
+    if (args.contestSet !== undefined && args.contestSet !== null) {
+      this.contestSet = Thrift.copyList(args.contestSet, [ttypes.Contest]);
     }
   }
 };
@@ -4584,22 +5265,22 @@ Response.prototype.read = function(input) {
       break;
       case 3:
       if (ftype == Thrift.Type.MAP) {
-        var _size242 = 0;
-        var _rtmp3246;
+        var _size300 = 0;
+        var _rtmp3304;
         this.proxyidmap = {};
-        var _ktype243 = 0;
-        var _vtype244 = 0;
-        _rtmp3246 = input.readMapBegin();
-        _ktype243 = _rtmp3246.ktype;
-        _vtype244 = _rtmp3246.vtype;
-        _size242 = _rtmp3246.size;
-        for (var _i247 = 0; _i247 < _size242; ++_i247)
+        var _ktype301 = 0;
+        var _vtype302 = 0;
+        _rtmp3304 = input.readMapBegin();
+        _ktype301 = _rtmp3304.ktype;
+        _vtype302 = _rtmp3304.vtype;
+        _size300 = _rtmp3304.size;
+        for (var _i305 = 0; _i305 < _size300; ++_i305)
         {
-          var key248 = null;
-          var val249 = null;
-          key248 = input.readI64();
-          val249 = input.readI64();
-          this.proxyidmap[key248] = val249;
+          var key306 = null;
+          var val307 = null;
+          key306 = input.readI64();
+          val307 = input.readI64();
+          this.proxyidmap[key306] = val307;
         }
         input.readMapEnd();
       } else {
@@ -4656,19 +5337,61 @@ Response.prototype.read = function(input) {
       break;
       case 10:
       if (ftype == Thrift.Type.SET) {
-        var _size250 = 0;
-        var _rtmp3254;
+        var _size308 = 0;
+        var _rtmp3312;
         this.analyticsAggregateSet = [];
-        var _etype253 = 0;
-        _rtmp3254 = input.readSetBegin();
-        _etype253 = _rtmp3254.etype;
-        _size250 = _rtmp3254.size;
-        for (var _i255 = 0; _i255 < _size250; ++_i255)
+        var _etype311 = 0;
+        _rtmp3312 = input.readSetBegin();
+        _etype311 = _rtmp3312.etype;
+        _size308 = _rtmp3312.size;
+        for (var _i313 = 0; _i313 < _size308; ++_i313)
         {
-          var elem256 = null;
-          elem256 = new ttypes.AnalyticsAggregate();
-          elem256.read(input);
-          this.analyticsAggregateSet.push(elem256);
+          var elem314 = null;
+          elem314 = new ttypes.AnalyticsAggregate();
+          elem314.read(input);
+          this.analyticsAggregateSet.push(elem314);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 11:
+      if (ftype == Thrift.Type.SET) {
+        var _size315 = 0;
+        var _rtmp3319;
+        this.notificationSet = [];
+        var _etype318 = 0;
+        _rtmp3319 = input.readSetBegin();
+        _etype318 = _rtmp3319.etype;
+        _size315 = _rtmp3319.size;
+        for (var _i320 = 0; _i320 < _size315; ++_i320)
+        {
+          var elem321 = null;
+          elem321 = new ttypes.Notification();
+          elem321.read(input);
+          this.notificationSet.push(elem321);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 12:
+      if (ftype == Thrift.Type.SET) {
+        var _size322 = 0;
+        var _rtmp3326;
+        this.contestSet = [];
+        var _etype325 = 0;
+        _rtmp3326 = input.readSetBegin();
+        _etype325 = _rtmp3326.etype;
+        _size322 = _rtmp3326.size;
+        for (var _i327 = 0; _i327 < _size322; ++_i327)
+        {
+          var elem328 = null;
+          elem328 = new ttypes.Contest();
+          elem328.read(input);
+          this.contestSet.push(elem328);
         }
         input.readSetEnd();
       } else {
@@ -4699,13 +5422,13 @@ Response.prototype.write = function(output) {
   if (this.proxyidmap !== null && this.proxyidmap !== undefined) {
     output.writeFieldBegin('proxyidmap', Thrift.Type.MAP, 3);
     output.writeMapBegin(Thrift.Type.I64, Thrift.Type.I64, Thrift.objectLength(this.proxyidmap));
-    for (var kiter257 in this.proxyidmap)
+    for (var kiter329 in this.proxyidmap)
     {
-      if (this.proxyidmap.hasOwnProperty(kiter257))
+      if (this.proxyidmap.hasOwnProperty(kiter329))
       {
-        var viter258 = this.proxyidmap[kiter257];
-        output.writeI64(kiter257);
-        output.writeI64(viter258);
+        var viter330 = this.proxyidmap[kiter329];
+        output.writeI64(kiter329);
+        output.writeI64(viter330);
       }
     }
     output.writeMapEnd();
@@ -4744,12 +5467,40 @@ Response.prototype.write = function(output) {
   if (this.analyticsAggregateSet !== null && this.analyticsAggregateSet !== undefined) {
     output.writeFieldBegin('analyticsAggregateSet', Thrift.Type.SET, 10);
     output.writeSetBegin(Thrift.Type.STRUCT, this.analyticsAggregateSet.length);
-    for (var iter259 in this.analyticsAggregateSet)
+    for (var iter331 in this.analyticsAggregateSet)
     {
-      if (this.analyticsAggregateSet.hasOwnProperty(iter259))
+      if (this.analyticsAggregateSet.hasOwnProperty(iter331))
       {
-        iter259 = this.analyticsAggregateSet[iter259];
-        iter259.write(output);
+        iter331 = this.analyticsAggregateSet[iter331];
+        iter331.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.notificationSet !== null && this.notificationSet !== undefined) {
+    output.writeFieldBegin('notificationSet', Thrift.Type.SET, 11);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.notificationSet.length);
+    for (var iter332 in this.notificationSet)
+    {
+      if (this.notificationSet.hasOwnProperty(iter332))
+      {
+        iter332 = this.notificationSet[iter332];
+        iter332.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.contestSet !== null && this.contestSet !== undefined) {
+    output.writeFieldBegin('contestSet', Thrift.Type.SET, 12);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.contestSet.length);
+    for (var iter333 in this.contestSet)
+    {
+      if (this.contestSet.hasOwnProperty(iter333))
+      {
+        iter333 = this.contestSet[iter333];
+        iter333.write(output);
       }
     }
     output.writeSetEnd();
@@ -4773,6 +5524,8 @@ var Marker = module.exports.Marker = function(args) {
   this.eleme2 = null;
   this.tags = null;
   this.mileages = null;
+  this.showZoomMin = null;
+  this.showZoomMax = null;
   if (args) {
     if (args.id !== undefined && args.id !== null) {
       this.id = args.id;
@@ -4809,6 +5562,12 @@ var Marker = module.exports.Marker = function(args) {
     }
     if (args.mileages !== undefined && args.mileages !== null) {
       this.mileages = Thrift.copyList(args.mileages, [ttypes.Mileage]);
+    }
+    if (args.showZoomMin !== undefined && args.showZoomMin !== null) {
+      this.showZoomMin = args.showZoomMin;
+    }
+    if (args.showZoomMax !== undefined && args.showZoomMax !== null) {
+      this.showZoomMax = args.showZoomMax;
     }
   }
 };
@@ -4898,19 +5657,19 @@ Marker.prototype.read = function(input) {
       break;
       case 11:
       if (ftype == Thrift.Type.SET) {
-        var _size260 = 0;
-        var _rtmp3264;
+        var _size334 = 0;
+        var _rtmp3338;
         this.tags = [];
-        var _etype263 = 0;
-        _rtmp3264 = input.readSetBegin();
-        _etype263 = _rtmp3264.etype;
-        _size260 = _rtmp3264.size;
-        for (var _i265 = 0; _i265 < _size260; ++_i265)
+        var _etype337 = 0;
+        _rtmp3338 = input.readSetBegin();
+        _etype337 = _rtmp3338.etype;
+        _size334 = _rtmp3338.size;
+        for (var _i339 = 0; _i339 < _size334; ++_i339)
         {
-          var elem266 = null;
-          elem266 = new ttypes.Tag();
-          elem266.read(input);
-          this.tags.push(elem266);
+          var elem340 = null;
+          elem340 = new ttypes.Tag();
+          elem340.read(input);
+          this.tags.push(elem340);
         }
         input.readSetEnd();
       } else {
@@ -4919,21 +5678,35 @@ Marker.prototype.read = function(input) {
       break;
       case 12:
       if (ftype == Thrift.Type.SET) {
-        var _size267 = 0;
-        var _rtmp3271;
+        var _size341 = 0;
+        var _rtmp3345;
         this.mileages = [];
-        var _etype270 = 0;
-        _rtmp3271 = input.readSetBegin();
-        _etype270 = _rtmp3271.etype;
-        _size267 = _rtmp3271.size;
-        for (var _i272 = 0; _i272 < _size267; ++_i272)
+        var _etype344 = 0;
+        _rtmp3345 = input.readSetBegin();
+        _etype344 = _rtmp3345.etype;
+        _size341 = _rtmp3345.size;
+        for (var _i346 = 0; _i346 < _size341; ++_i346)
         {
-          var elem273 = null;
-          elem273 = new ttypes.Mileage();
-          elem273.read(input);
-          this.mileages.push(elem273);
+          var elem347 = null;
+          elem347 = new ttypes.Mileage();
+          elem347.read(input);
+          this.mileages.push(elem347);
         }
         input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 13:
+      if (ftype == Thrift.Type.I32) {
+        this.showZoomMin = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 14:
+      if (ftype == Thrift.Type.I32) {
+        this.showZoomMax = input.readI32();
       } else {
         input.skip(ftype);
       }
@@ -5002,12 +5775,12 @@ Marker.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 11);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter274 in this.tags)
+    for (var iter348 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter274))
+      if (this.tags.hasOwnProperty(iter348))
       {
-        iter274 = this.tags[iter274];
-        iter274.write(output);
+        iter348 = this.tags[iter348];
+        iter348.write(output);
       }
     }
     output.writeSetEnd();
@@ -5016,15 +5789,25 @@ Marker.prototype.write = function(output) {
   if (this.mileages !== null && this.mileages !== undefined) {
     output.writeFieldBegin('mileages', Thrift.Type.SET, 12);
     output.writeSetBegin(Thrift.Type.STRUCT, this.mileages.length);
-    for (var iter275 in this.mileages)
+    for (var iter349 in this.mileages)
     {
-      if (this.mileages.hasOwnProperty(iter275))
+      if (this.mileages.hasOwnProperty(iter349))
       {
-        iter275 = this.mileages[iter275];
-        iter275.write(output);
+        iter349 = this.mileages[iter349];
+        iter349.write(output);
       }
     }
     output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.showZoomMin !== null && this.showZoomMin !== undefined) {
+    output.writeFieldBegin('showZoomMin', Thrift.Type.I32, 13);
+    output.writeI32(this.showZoomMin);
+    output.writeFieldEnd();
+  }
+  if (this.showZoomMax !== null && this.showZoomMax !== undefined) {
+    output.writeFieldBegin('showZoomMax', Thrift.Type.I32, 14);
+    output.writeI32(this.showZoomMax);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -5189,19 +5972,19 @@ Line.prototype.read = function(input) {
       break;
       case 6:
       if (ftype == Thrift.Type.LIST) {
-        var _size276 = 0;
-        var _rtmp3280;
+        var _size350 = 0;
+        var _rtmp3354;
         this.latlngs = [];
-        var _etype279 = 0;
-        _rtmp3280 = input.readListBegin();
-        _etype279 = _rtmp3280.etype;
-        _size276 = _rtmp3280.size;
-        for (var _i281 = 0; _i281 < _size276; ++_i281)
+        var _etype353 = 0;
+        _rtmp3354 = input.readListBegin();
+        _etype353 = _rtmp3354.etype;
+        _size350 = _rtmp3354.size;
+        for (var _i355 = 0; _i355 < _size350; ++_i355)
         {
-          var elem282 = null;
-          elem282 = new ttypes.LatLng();
-          elem282.read(input);
-          this.latlngs.push(elem282);
+          var elem356 = null;
+          elem356 = new ttypes.LatLng();
+          elem356.read(input);
+          this.latlngs.push(elem356);
         }
         input.readListEnd();
       } else {
@@ -5210,19 +5993,19 @@ Line.prototype.read = function(input) {
       break;
       case 7:
       if (ftype == Thrift.Type.SET) {
-        var _size283 = 0;
-        var _rtmp3287;
+        var _size357 = 0;
+        var _rtmp3361;
         this.tags = [];
-        var _etype286 = 0;
-        _rtmp3287 = input.readSetBegin();
-        _etype286 = _rtmp3287.etype;
-        _size283 = _rtmp3287.size;
-        for (var _i288 = 0; _i288 < _size283; ++_i288)
+        var _etype360 = 0;
+        _rtmp3361 = input.readSetBegin();
+        _etype360 = _rtmp3361.etype;
+        _size357 = _rtmp3361.size;
+        for (var _i362 = 0; _i362 < _size357; ++_i362)
         {
-          var elem289 = null;
-          elem289 = new ttypes.Tag();
-          elem289.read(input);
-          this.tags.push(elem289);
+          var elem363 = null;
+          elem363 = new ttypes.Tag();
+          elem363.read(input);
+          this.tags.push(elem363);
         }
         input.readSetEnd();
       } else {
@@ -5231,19 +6014,19 @@ Line.prototype.read = function(input) {
       break;
       case 8:
       if (ftype == Thrift.Type.SET) {
-        var _size290 = 0;
-        var _rtmp3294;
+        var _size364 = 0;
+        var _rtmp3368;
         this.resources = [];
-        var _etype293 = 0;
-        _rtmp3294 = input.readSetBegin();
-        _etype293 = _rtmp3294.etype;
-        _size290 = _rtmp3294.size;
-        for (var _i295 = 0; _i295 < _size290; ++_i295)
+        var _etype367 = 0;
+        _rtmp3368 = input.readSetBegin();
+        _etype367 = _rtmp3368.etype;
+        _size364 = _rtmp3368.size;
+        for (var _i369 = 0; _i369 < _size364; ++_i369)
         {
-          var elem296 = null;
-          elem296 = new ttypes.Resource();
-          elem296.read(input);
-          this.resources.push(elem296);
+          var elem370 = null;
+          elem370 = new ttypes.Resource();
+          elem370.read(input);
+          this.resources.push(elem370);
         }
         input.readSetEnd();
       } else {
@@ -5252,18 +6035,18 @@ Line.prototype.read = function(input) {
       break;
       case 9:
       if (ftype == Thrift.Type.SET) {
-        var _size297 = 0;
-        var _rtmp3301;
+        var _size371 = 0;
+        var _rtmp3375;
         this.selector_ids = [];
-        var _etype300 = 0;
-        _rtmp3301 = input.readSetBegin();
-        _etype300 = _rtmp3301.etype;
-        _size297 = _rtmp3301.size;
-        for (var _i302 = 0; _i302 < _size297; ++_i302)
+        var _etype374 = 0;
+        _rtmp3375 = input.readSetBegin();
+        _etype374 = _rtmp3375.etype;
+        _size371 = _rtmp3375.size;
+        for (var _i376 = 0; _i376 < _size371; ++_i376)
         {
-          var elem303 = null;
-          elem303 = input.readI64();
-          this.selector_ids.push(elem303);
+          var elem377 = null;
+          elem377 = input.readI64();
+          this.selector_ids.push(elem377);
         }
         input.readSetEnd();
       } else {
@@ -5309,12 +6092,12 @@ Line.prototype.write = function(output) {
   if (this.latlngs !== null && this.latlngs !== undefined) {
     output.writeFieldBegin('latlngs', Thrift.Type.LIST, 6);
     output.writeListBegin(Thrift.Type.STRUCT, this.latlngs.length);
-    for (var iter304 in this.latlngs)
+    for (var iter378 in this.latlngs)
     {
-      if (this.latlngs.hasOwnProperty(iter304))
+      if (this.latlngs.hasOwnProperty(iter378))
       {
-        iter304 = this.latlngs[iter304];
-        iter304.write(output);
+        iter378 = this.latlngs[iter378];
+        iter378.write(output);
       }
     }
     output.writeListEnd();
@@ -5323,12 +6106,12 @@ Line.prototype.write = function(output) {
   if (this.tags !== null && this.tags !== undefined) {
     output.writeFieldBegin('tags', Thrift.Type.SET, 7);
     output.writeSetBegin(Thrift.Type.STRUCT, this.tags.length);
-    for (var iter305 in this.tags)
+    for (var iter379 in this.tags)
     {
-      if (this.tags.hasOwnProperty(iter305))
+      if (this.tags.hasOwnProperty(iter379))
       {
-        iter305 = this.tags[iter305];
-        iter305.write(output);
+        iter379 = this.tags[iter379];
+        iter379.write(output);
       }
     }
     output.writeSetEnd();
@@ -5337,12 +6120,12 @@ Line.prototype.write = function(output) {
   if (this.resources !== null && this.resources !== undefined) {
     output.writeFieldBegin('resources', Thrift.Type.SET, 8);
     output.writeSetBegin(Thrift.Type.STRUCT, this.resources.length);
-    for (var iter306 in this.resources)
+    for (var iter380 in this.resources)
     {
-      if (this.resources.hasOwnProperty(iter306))
+      if (this.resources.hasOwnProperty(iter380))
       {
-        iter306 = this.resources[iter306];
-        iter306.write(output);
+        iter380 = this.resources[iter380];
+        iter380.write(output);
       }
     }
     output.writeSetEnd();
@@ -5351,12 +6134,12 @@ Line.prototype.write = function(output) {
   if (this.selector_ids !== null && this.selector_ids !== undefined) {
     output.writeFieldBegin('selector_ids', Thrift.Type.SET, 9);
     output.writeSetBegin(Thrift.Type.I64, this.selector_ids.length);
-    for (var iter307 in this.selector_ids)
+    for (var iter381 in this.selector_ids)
     {
-      if (this.selector_ids.hasOwnProperty(iter307))
+      if (this.selector_ids.hasOwnProperty(iter381))
       {
-        iter307 = this.selector_ids[iter307];
-        output.writeI64(iter307);
+        iter381 = this.selector_ids[iter381];
+        output.writeI64(iter381);
       }
     }
     output.writeSetEnd();
@@ -5463,19 +6246,19 @@ WebMapResponse.prototype.read = function(input) {
     {
       case 1:
       if (ftype == Thrift.Type.LIST) {
-        var _size308 = 0;
-        var _rtmp3312;
+        var _size382 = 0;
+        var _rtmp3386;
         this.markers = [];
-        var _etype311 = 0;
-        _rtmp3312 = input.readListBegin();
-        _etype311 = _rtmp3312.etype;
-        _size308 = _rtmp3312.size;
-        for (var _i313 = 0; _i313 < _size308; ++_i313)
+        var _etype385 = 0;
+        _rtmp3386 = input.readListBegin();
+        _etype385 = _rtmp3386.etype;
+        _size382 = _rtmp3386.size;
+        for (var _i387 = 0; _i387 < _size382; ++_i387)
         {
-          var elem314 = null;
-          elem314 = new ttypes.Marker();
-          elem314.read(input);
-          this.markers.push(elem314);
+          var elem388 = null;
+          elem388 = new ttypes.Marker();
+          elem388.read(input);
+          this.markers.push(elem388);
         }
         input.readListEnd();
       } else {
@@ -5484,19 +6267,19 @@ WebMapResponse.prototype.read = function(input) {
       break;
       case 2:
       if (ftype == Thrift.Type.LIST) {
-        var _size315 = 0;
-        var _rtmp3319;
+        var _size389 = 0;
+        var _rtmp3393;
         this.lines = [];
-        var _etype318 = 0;
-        _rtmp3319 = input.readListBegin();
-        _etype318 = _rtmp3319.etype;
-        _size315 = _rtmp3319.size;
-        for (var _i320 = 0; _i320 < _size315; ++_i320)
+        var _etype392 = 0;
+        _rtmp3393 = input.readListBegin();
+        _etype392 = _rtmp3393.etype;
+        _size389 = _rtmp3393.size;
+        for (var _i394 = 0; _i394 < _size389; ++_i394)
         {
-          var elem321 = null;
-          elem321 = new ttypes.Line();
-          elem321.read(input);
-          this.lines.push(elem321);
+          var elem395 = null;
+          elem395 = new ttypes.Line();
+          elem395.read(input);
+          this.lines.push(elem395);
         }
         input.readListEnd();
       } else {
@@ -5517,12 +6300,12 @@ WebMapResponse.prototype.write = function(output) {
   if (this.markers !== null && this.markers !== undefined) {
     output.writeFieldBegin('markers', Thrift.Type.LIST, 1);
     output.writeListBegin(Thrift.Type.STRUCT, this.markers.length);
-    for (var iter322 in this.markers)
+    for (var iter396 in this.markers)
     {
-      if (this.markers.hasOwnProperty(iter322))
+      if (this.markers.hasOwnProperty(iter396))
       {
-        iter322 = this.markers[iter322];
-        iter322.write(output);
+        iter396 = this.markers[iter396];
+        iter396.write(output);
       }
     }
     output.writeListEnd();
@@ -5531,12 +6314,12 @@ WebMapResponse.prototype.write = function(output) {
   if (this.lines !== null && this.lines !== undefined) {
     output.writeFieldBegin('lines', Thrift.Type.LIST, 2);
     output.writeListBegin(Thrift.Type.STRUCT, this.lines.length);
-    for (var iter323 in this.lines)
+    for (var iter397 in this.lines)
     {
-      if (this.lines.hasOwnProperty(iter323))
+      if (this.lines.hasOwnProperty(iter397))
       {
-        iter323 = this.lines[iter323];
-        iter323.write(output);
+        iter397 = this.lines[iter397];
+        iter397.write(output);
       }
     }
     output.writeListEnd();
@@ -5737,19 +6520,19 @@ ReportableAttribute.prototype.read = function(input) {
       break;
       case 5:
       if (ftype == Thrift.Type.LIST) {
-        var _size324 = 0;
-        var _rtmp3328;
+        var _size398 = 0;
+        var _rtmp3402;
         this.pickableOptions = [];
-        var _etype327 = 0;
-        _rtmp3328 = input.readListBegin();
-        _etype327 = _rtmp3328.etype;
-        _size324 = _rtmp3328.size;
-        for (var _i329 = 0; _i329 < _size324; ++_i329)
+        var _etype401 = 0;
+        _rtmp3402 = input.readListBegin();
+        _etype401 = _rtmp3402.etype;
+        _size398 = _rtmp3402.size;
+        for (var _i403 = 0; _i403 < _size398; ++_i403)
         {
-          var elem330 = null;
-          elem330 = new ttypes.PickableOption();
-          elem330.read(input);
-          this.pickableOptions.push(elem330);
+          var elem404 = null;
+          elem404 = new ttypes.PickableOption();
+          elem404.read(input);
+          this.pickableOptions.push(elem404);
         }
         input.readListEnd();
       } else {
@@ -5765,19 +6548,19 @@ ReportableAttribute.prototype.read = function(input) {
       break;
       case 7:
       if (ftype == Thrift.Type.LIST) {
-        var _size331 = 0;
-        var _rtmp3335;
+        var _size405 = 0;
+        var _rtmp3409;
         this.applicableTags = [];
-        var _etype334 = 0;
-        _rtmp3335 = input.readListBegin();
-        _etype334 = _rtmp3335.etype;
-        _size331 = _rtmp3335.size;
-        for (var _i336 = 0; _i336 < _size331; ++_i336)
+        var _etype408 = 0;
+        _rtmp3409 = input.readListBegin();
+        _etype408 = _rtmp3409.etype;
+        _size405 = _rtmp3409.size;
+        for (var _i410 = 0; _i410 < _size405; ++_i410)
         {
-          var elem337 = null;
-          elem337 = new ttypes.Tag();
-          elem337.read(input);
-          this.applicableTags.push(elem337);
+          var elem411 = null;
+          elem411 = new ttypes.Tag();
+          elem411.read(input);
+          this.applicableTags.push(elem411);
         }
         input.readListEnd();
       } else {
@@ -5818,12 +6601,12 @@ ReportableAttribute.prototype.write = function(output) {
   if (this.pickableOptions !== null && this.pickableOptions !== undefined) {
     output.writeFieldBegin('pickableOptions', Thrift.Type.LIST, 5);
     output.writeListBegin(Thrift.Type.STRUCT, this.pickableOptions.length);
-    for (var iter338 in this.pickableOptions)
+    for (var iter412 in this.pickableOptions)
     {
-      if (this.pickableOptions.hasOwnProperty(iter338))
+      if (this.pickableOptions.hasOwnProperty(iter412))
       {
-        iter338 = this.pickableOptions[iter338];
-        iter338.write(output);
+        iter412 = this.pickableOptions[iter412];
+        iter412.write(output);
       }
     }
     output.writeListEnd();
@@ -5837,12 +6620,12 @@ ReportableAttribute.prototype.write = function(output) {
   if (this.applicableTags !== null && this.applicableTags !== undefined) {
     output.writeFieldBegin('applicableTags', Thrift.Type.LIST, 7);
     output.writeListBegin(Thrift.Type.STRUCT, this.applicableTags.length);
-    for (var iter339 in this.applicableTags)
+    for (var iter413 in this.applicableTags)
     {
-      if (this.applicableTags.hasOwnProperty(iter339))
+      if (this.applicableTags.hasOwnProperty(iter413))
       {
-        iter339 = this.applicableTags[iter339];
-        iter339.write(output);
+        iter413 = this.applicableTags[iter413];
+        iter413.write(output);
       }
     }
     output.writeListEnd();

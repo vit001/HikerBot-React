@@ -15,12 +15,12 @@ var Types_ttypes = require('./Types_types');
 var Authentication_ttypes = require('./Authentication_types');
 
 
-var ttypes = require('./Datastore_types');
+var ttypes = require('./DataStore_types');
 //HELPER FUNCTIONS AND STRUCTURES
 
 var DataStore_checkVersion_args = function(args) {
   this.clientName = null;
-  this.hampVersionMajor = 14;
+  this.hampVersionMajor = 20;
   this.hampVersionMinor = 1;
   if (args) {
     if (args.clientName !== undefined && args.clientName !== null) {
@@ -1283,6 +1283,412 @@ DataStore_putSignalStrength_result.prototype.write = function(output) {
   return;
 };
 
+var DataStore_putContestSet_args = function(args) {
+  this.authenticationToken = null;
+  this.contestSet = null;
+  if (args) {
+    if (args.authenticationToken !== undefined && args.authenticationToken !== null) {
+      this.authenticationToken = args.authenticationToken;
+    }
+    if (args.contestSet !== undefined && args.contestSet !== null) {
+      this.contestSet = Thrift.copyList(args.contestSet, [Types_ttypes.Contest]);
+    }
+  }
+};
+DataStore_putContestSet_args.prototype = {};
+DataStore_putContestSet_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRING) {
+        this.authenticationToken = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.SET) {
+        var _size16 = 0;
+        var _rtmp320;
+        this.contestSet = [];
+        var _etype19 = 0;
+        _rtmp320 = input.readSetBegin();
+        _etype19 = _rtmp320.etype;
+        _size16 = _rtmp320.size;
+        for (var _i21 = 0; _i21 < _size16; ++_i21)
+        {
+          var elem22 = null;
+          elem22 = new Types_ttypes.Contest();
+          elem22.read(input);
+          this.contestSet.push(elem22);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+DataStore_putContestSet_args.prototype.write = function(output) {
+  output.writeStructBegin('DataStore_putContestSet_args');
+  if (this.authenticationToken !== null && this.authenticationToken !== undefined) {
+    output.writeFieldBegin('authenticationToken', Thrift.Type.STRING, 1);
+    output.writeString(this.authenticationToken);
+    output.writeFieldEnd();
+  }
+  if (this.contestSet !== null && this.contestSet !== undefined) {
+    output.writeFieldBegin('contestSet', Thrift.Type.SET, 2);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.contestSet.length);
+    for (var iter23 in this.contestSet)
+    {
+      if (this.contestSet.hasOwnProperty(iter23))
+      {
+        iter23 = this.contestSet[iter23];
+        iter23.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var DataStore_putContestSet_result = function(args) {
+  this.success = null;
+  this.userException = null;
+  this.systemException = null;
+  this.notFoundException = null;
+  if (args instanceof Errors_ttypes.HAMPUserException) {
+    this.userException = args;
+    return;
+  }
+  if (args instanceof Errors_ttypes.HAMPSystemException) {
+    this.systemException = args;
+    return;
+  }
+  if (args instanceof Errors_ttypes.HAMPNotFoundException) {
+    this.notFoundException = args;
+    return;
+  }
+  if (args) {
+    if (args.success !== undefined && args.success !== null) {
+      this.success = new Types_ttypes.Response(args.success);
+    }
+    if (args.userException !== undefined && args.userException !== null) {
+      this.userException = args.userException;
+    }
+    if (args.systemException !== undefined && args.systemException !== null) {
+      this.systemException = args.systemException;
+    }
+    if (args.notFoundException !== undefined && args.notFoundException !== null) {
+      this.notFoundException = args.notFoundException;
+    }
+  }
+};
+DataStore_putContestSet_result.prototype = {};
+DataStore_putContestSet_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new Types_ttypes.Response();
+        this.success.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.userException = new Errors_ttypes.HAMPUserException();
+        this.userException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.systemException = new Errors_ttypes.HAMPSystemException();
+        this.systemException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.notFoundException = new Errors_ttypes.HAMPNotFoundException();
+        this.notFoundException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+DataStore_putContestSet_result.prototype.write = function(output) {
+  output.writeStructBegin('DataStore_putContestSet_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.userException !== null && this.userException !== undefined) {
+    output.writeFieldBegin('userException', Thrift.Type.STRUCT, 1);
+    this.userException.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.systemException !== null && this.systemException !== undefined) {
+    output.writeFieldBegin('systemException', Thrift.Type.STRUCT, 2);
+    this.systemException.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.notFoundException !== null && this.notFoundException !== undefined) {
+    output.writeFieldBegin('notFoundException', Thrift.Type.STRUCT, 3);
+    this.notFoundException.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var DataStore_putNotificationSet_args = function(args) {
+  this.authenticationToken = null;
+  this.notificationSet = null;
+  if (args) {
+    if (args.authenticationToken !== undefined && args.authenticationToken !== null) {
+      this.authenticationToken = args.authenticationToken;
+    }
+    if (args.notificationSet !== undefined && args.notificationSet !== null) {
+      this.notificationSet = Thrift.copyList(args.notificationSet, [Types_ttypes.Notification]);
+    }
+  }
+};
+DataStore_putNotificationSet_args.prototype = {};
+DataStore_putNotificationSet_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRING) {
+        this.authenticationToken = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.SET) {
+        var _size24 = 0;
+        var _rtmp328;
+        this.notificationSet = [];
+        var _etype27 = 0;
+        _rtmp328 = input.readSetBegin();
+        _etype27 = _rtmp328.etype;
+        _size24 = _rtmp328.size;
+        for (var _i29 = 0; _i29 < _size24; ++_i29)
+        {
+          var elem30 = null;
+          elem30 = new Types_ttypes.Notification();
+          elem30.read(input);
+          this.notificationSet.push(elem30);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+DataStore_putNotificationSet_args.prototype.write = function(output) {
+  output.writeStructBegin('DataStore_putNotificationSet_args');
+  if (this.authenticationToken !== null && this.authenticationToken !== undefined) {
+    output.writeFieldBegin('authenticationToken', Thrift.Type.STRING, 1);
+    output.writeString(this.authenticationToken);
+    output.writeFieldEnd();
+  }
+  if (this.notificationSet !== null && this.notificationSet !== undefined) {
+    output.writeFieldBegin('notificationSet', Thrift.Type.SET, 2);
+    output.writeSetBegin(Thrift.Type.STRUCT, this.notificationSet.length);
+    for (var iter31 in this.notificationSet)
+    {
+      if (this.notificationSet.hasOwnProperty(iter31))
+      {
+        iter31 = this.notificationSet[iter31];
+        iter31.write(output);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var DataStore_putNotificationSet_result = function(args) {
+  this.success = null;
+  this.userException = null;
+  this.systemException = null;
+  this.notFoundException = null;
+  if (args instanceof Errors_ttypes.HAMPUserException) {
+    this.userException = args;
+    return;
+  }
+  if (args instanceof Errors_ttypes.HAMPSystemException) {
+    this.systemException = args;
+    return;
+  }
+  if (args instanceof Errors_ttypes.HAMPNotFoundException) {
+    this.notFoundException = args;
+    return;
+  }
+  if (args) {
+    if (args.success !== undefined && args.success !== null) {
+      this.success = new Types_ttypes.Response(args.success);
+    }
+    if (args.userException !== undefined && args.userException !== null) {
+      this.userException = args.userException;
+    }
+    if (args.systemException !== undefined && args.systemException !== null) {
+      this.systemException = args.systemException;
+    }
+    if (args.notFoundException !== undefined && args.notFoundException !== null) {
+      this.notFoundException = args.notFoundException;
+    }
+  }
+};
+DataStore_putNotificationSet_result.prototype = {};
+DataStore_putNotificationSet_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.success = new Types_ttypes.Response();
+        this.success.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.userException = new Errors_ttypes.HAMPUserException();
+        this.userException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.systemException = new Errors_ttypes.HAMPSystemException();
+        this.systemException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.notFoundException = new Errors_ttypes.HAMPNotFoundException();
+        this.notFoundException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+DataStore_putNotificationSet_result.prototype.write = function(output) {
+  output.writeStructBegin('DataStore_putNotificationSet_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.STRUCT, 0);
+    this.success.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.userException !== null && this.userException !== undefined) {
+    output.writeFieldBegin('userException', Thrift.Type.STRUCT, 1);
+    this.userException.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.systemException !== null && this.systemException !== undefined) {
+    output.writeFieldBegin('systemException', Thrift.Type.STRUCT, 2);
+    this.systemException.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.notFoundException !== null && this.notFoundException !== undefined) {
+    output.writeFieldBegin('notFoundException', Thrift.Type.STRUCT, 3);
+    this.notFoundException.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
 var DataStore_putSelector_args = function(args) {
   this.authenticationToken = null;
   this.selector = null;
@@ -1642,19 +2048,19 @@ DataStore_getNextModifiedRecordChunk_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.LIST) {
-        var _size16 = 0;
-        var _rtmp320;
+        var _size32 = 0;
+        var _rtmp336;
         this.success = [];
-        var _etype19 = 0;
-        _rtmp320 = input.readListBegin();
-        _etype19 = _rtmp320.etype;
-        _size16 = _rtmp320.size;
-        for (var _i21 = 0; _i21 < _size16; ++_i21)
+        var _etype35 = 0;
+        _rtmp336 = input.readListBegin();
+        _etype35 = _rtmp336.etype;
+        _size32 = _rtmp336.size;
+        for (var _i37 = 0; _i37 < _size32; ++_i37)
         {
-          var elem22 = null;
-          elem22 = new Types_ttypes.Response();
-          elem22.read(input);
-          this.success.push(elem22);
+          var elem38 = null;
+          elem38 = new Types_ttypes.Response();
+          elem38.read(input);
+          this.success.push(elem38);
         }
         input.readListEnd();
       } else {
@@ -1699,12 +2105,12 @@ DataStore_getNextModifiedRecordChunk_result.prototype.write = function(output) {
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.LIST, 0);
     output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
-    for (var iter23 in this.success)
+    for (var iter39 in this.success)
     {
-      if (this.success.hasOwnProperty(iter23))
+      if (this.success.hasOwnProperty(iter39))
       {
-        iter23 = this.success[iter23];
-        iter23.write(output);
+        iter39 = this.success[iter39];
+        iter39.write(output);
       }
     }
     output.writeListEnd();
@@ -1788,18 +2194,18 @@ DataStore_getNextModifiedRecordChunkLastVerOnly_args.prototype.read = function(i
       break;
       case 3:
       if (ftype == Thrift.Type.SET) {
-        var _size24 = 0;
-        var _rtmp328;
+        var _size40 = 0;
+        var _rtmp344;
         this.datatypes = [];
-        var _etype27 = 0;
-        _rtmp328 = input.readSetBegin();
-        _etype27 = _rtmp328.etype;
-        _size24 = _rtmp328.size;
-        for (var _i29 = 0; _i29 < _size24; ++_i29)
+        var _etype43 = 0;
+        _rtmp344 = input.readSetBegin();
+        _etype43 = _rtmp344.etype;
+        _size40 = _rtmp344.size;
+        for (var _i45 = 0; _i45 < _size40; ++_i45)
         {
-          var elem30 = null;
-          elem30 = input.readI32();
-          this.datatypes.push(elem30);
+          var elem46 = null;
+          elem46 = input.readI32();
+          this.datatypes.push(elem46);
         }
         input.readSetEnd();
       } else {
@@ -1851,12 +2257,12 @@ DataStore_getNextModifiedRecordChunkLastVerOnly_args.prototype.write = function(
   if (this.datatypes !== null && this.datatypes !== undefined) {
     output.writeFieldBegin('datatypes', Thrift.Type.SET, 3);
     output.writeSetBegin(Thrift.Type.I32, this.datatypes.length);
-    for (var iter31 in this.datatypes)
+    for (var iter47 in this.datatypes)
     {
-      if (this.datatypes.hasOwnProperty(iter31))
+      if (this.datatypes.hasOwnProperty(iter47))
       {
-        iter31 = this.datatypes[iter31];
-        output.writeI32(iter31);
+        iter47 = this.datatypes[iter47];
+        output.writeI32(iter47);
       }
     }
     output.writeSetEnd();
@@ -1930,19 +2336,19 @@ DataStore_getNextModifiedRecordChunkLastVerOnly_result.prototype.read = function
     {
       case 0:
       if (ftype == Thrift.Type.LIST) {
-        var _size32 = 0;
-        var _rtmp336;
+        var _size48 = 0;
+        var _rtmp352;
         this.success = [];
-        var _etype35 = 0;
-        _rtmp336 = input.readListBegin();
-        _etype35 = _rtmp336.etype;
-        _size32 = _rtmp336.size;
-        for (var _i37 = 0; _i37 < _size32; ++_i37)
+        var _etype51 = 0;
+        _rtmp352 = input.readListBegin();
+        _etype51 = _rtmp352.etype;
+        _size48 = _rtmp352.size;
+        for (var _i53 = 0; _i53 < _size48; ++_i53)
         {
-          var elem38 = null;
-          elem38 = new Types_ttypes.Response();
-          elem38.read(input);
-          this.success.push(elem38);
+          var elem54 = null;
+          elem54 = new Types_ttypes.Response();
+          elem54.read(input);
+          this.success.push(elem54);
         }
         input.readListEnd();
       } else {
@@ -1987,12 +2393,300 @@ DataStore_getNextModifiedRecordChunkLastVerOnly_result.prototype.write = functio
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.LIST, 0);
     output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
-    for (var iter39 in this.success)
+    for (var iter55 in this.success)
     {
-      if (this.success.hasOwnProperty(iter39))
+      if (this.success.hasOwnProperty(iter55))
       {
-        iter39 = this.success[iter39];
-        iter39.write(output);
+        iter55 = this.success[iter55];
+        iter55.write(output);
+      }
+    }
+    output.writeListEnd();
+    output.writeFieldEnd();
+  }
+  if (this.userException !== null && this.userException !== undefined) {
+    output.writeFieldBegin('userException', Thrift.Type.STRUCT, 1);
+    this.userException.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.systemException !== null && this.systemException !== undefined) {
+    output.writeFieldBegin('systemException', Thrift.Type.STRUCT, 2);
+    this.systemException.write(output);
+    output.writeFieldEnd();
+  }
+  if (this.notFoundException !== null && this.notFoundException !== undefined) {
+    output.writeFieldBegin('notFoundException', Thrift.Type.STRUCT, 3);
+    this.notFoundException.write(output);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var DataStore_getNextModifiedRecordChunkTracksLastVerOnly_args = function(args) {
+  this.authenticationToken = null;
+  this.selector_id = null;
+  this.datatypes = null;
+  this.changeset_id = null;
+  this.withPreviewResourcesData = null;
+  this.withFullResourcesData = null;
+  if (args) {
+    if (args.authenticationToken !== undefined && args.authenticationToken !== null) {
+      this.authenticationToken = args.authenticationToken;
+    }
+    if (args.selector_id !== undefined && args.selector_id !== null) {
+      this.selector_id = args.selector_id;
+    }
+    if (args.datatypes !== undefined && args.datatypes !== null) {
+      this.datatypes = Thrift.copyList(args.datatypes, [null]);
+    }
+    if (args.changeset_id !== undefined && args.changeset_id !== null) {
+      this.changeset_id = args.changeset_id;
+    }
+    if (args.withPreviewResourcesData !== undefined && args.withPreviewResourcesData !== null) {
+      this.withPreviewResourcesData = args.withPreviewResourcesData;
+    }
+    if (args.withFullResourcesData !== undefined && args.withFullResourcesData !== null) {
+      this.withFullResourcesData = args.withFullResourcesData;
+    }
+  }
+};
+DataStore_getNextModifiedRecordChunkTracksLastVerOnly_args.prototype = {};
+DataStore_getNextModifiedRecordChunkTracksLastVerOnly_args.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+      if (ftype == Thrift.Type.STRING) {
+        this.authenticationToken = input.readString();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.I64) {
+        this.selector_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.SET) {
+        var _size56 = 0;
+        var _rtmp360;
+        this.datatypes = [];
+        var _etype59 = 0;
+        _rtmp360 = input.readSetBegin();
+        _etype59 = _rtmp360.etype;
+        _size56 = _rtmp360.size;
+        for (var _i61 = 0; _i61 < _size56; ++_i61)
+        {
+          var elem62 = null;
+          elem62 = input.readI32();
+          this.datatypes.push(elem62);
+        }
+        input.readSetEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 4:
+      if (ftype == Thrift.Type.I64) {
+        this.changeset_id = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 5:
+      if (ftype == Thrift.Type.BOOL) {
+        this.withPreviewResourcesData = input.readBool();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 6:
+      if (ftype == Thrift.Type.BOOL) {
+        this.withFullResourcesData = input.readBool();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+DataStore_getNextModifiedRecordChunkTracksLastVerOnly_args.prototype.write = function(output) {
+  output.writeStructBegin('DataStore_getNextModifiedRecordChunkTracksLastVerOnly_args');
+  if (this.authenticationToken !== null && this.authenticationToken !== undefined) {
+    output.writeFieldBegin('authenticationToken', Thrift.Type.STRING, 1);
+    output.writeString(this.authenticationToken);
+    output.writeFieldEnd();
+  }
+  if (this.selector_id !== null && this.selector_id !== undefined) {
+    output.writeFieldBegin('selector_id', Thrift.Type.I64, 2);
+    output.writeI64(this.selector_id);
+    output.writeFieldEnd();
+  }
+  if (this.datatypes !== null && this.datatypes !== undefined) {
+    output.writeFieldBegin('datatypes', Thrift.Type.SET, 3);
+    output.writeSetBegin(Thrift.Type.I32, this.datatypes.length);
+    for (var iter63 in this.datatypes)
+    {
+      if (this.datatypes.hasOwnProperty(iter63))
+      {
+        iter63 = this.datatypes[iter63];
+        output.writeI32(iter63);
+      }
+    }
+    output.writeSetEnd();
+    output.writeFieldEnd();
+  }
+  if (this.changeset_id !== null && this.changeset_id !== undefined) {
+    output.writeFieldBegin('changeset_id', Thrift.Type.I64, 4);
+    output.writeI64(this.changeset_id);
+    output.writeFieldEnd();
+  }
+  if (this.withPreviewResourcesData !== null && this.withPreviewResourcesData !== undefined) {
+    output.writeFieldBegin('withPreviewResourcesData', Thrift.Type.BOOL, 5);
+    output.writeBool(this.withPreviewResourcesData);
+    output.writeFieldEnd();
+  }
+  if (this.withFullResourcesData !== null && this.withFullResourcesData !== undefined) {
+    output.writeFieldBegin('withFullResourcesData', Thrift.Type.BOOL, 6);
+    output.writeBool(this.withFullResourcesData);
+    output.writeFieldEnd();
+  }
+  output.writeFieldStop();
+  output.writeStructEnd();
+  return;
+};
+
+var DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result = function(args) {
+  this.success = null;
+  this.userException = null;
+  this.systemException = null;
+  this.notFoundException = null;
+  if (args instanceof Errors_ttypes.HAMPUserException) {
+    this.userException = args;
+    return;
+  }
+  if (args instanceof Errors_ttypes.HAMPSystemException) {
+    this.systemException = args;
+    return;
+  }
+  if (args instanceof Errors_ttypes.HAMPNotFoundException) {
+    this.notFoundException = args;
+    return;
+  }
+  if (args) {
+    if (args.success !== undefined && args.success !== null) {
+      this.success = Thrift.copyList(args.success, [Types_ttypes.Response]);
+    }
+    if (args.userException !== undefined && args.userException !== null) {
+      this.userException = args.userException;
+    }
+    if (args.systemException !== undefined && args.systemException !== null) {
+      this.systemException = args.systemException;
+    }
+    if (args.notFoundException !== undefined && args.notFoundException !== null) {
+      this.notFoundException = args.notFoundException;
+    }
+  }
+};
+DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result.prototype = {};
+DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result.prototype.read = function(input) {
+  input.readStructBegin();
+  while (true)
+  {
+    var ret = input.readFieldBegin();
+    var fname = ret.fname;
+    var ftype = ret.ftype;
+    var fid = ret.fid;
+    if (ftype == Thrift.Type.STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 0:
+      if (ftype == Thrift.Type.LIST) {
+        var _size64 = 0;
+        var _rtmp368;
+        this.success = [];
+        var _etype67 = 0;
+        _rtmp368 = input.readListBegin();
+        _etype67 = _rtmp368.etype;
+        _size64 = _rtmp368.size;
+        for (var _i69 = 0; _i69 < _size64; ++_i69)
+        {
+          var elem70 = null;
+          elem70 = new Types_ttypes.Response();
+          elem70.read(input);
+          this.success.push(elem70);
+        }
+        input.readListEnd();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 1:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.userException = new Errors_ttypes.HAMPUserException();
+        this.userException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 2:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.systemException = new Errors_ttypes.HAMPSystemException();
+        this.systemException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 3:
+      if (ftype == Thrift.Type.STRUCT) {
+        this.notFoundException = new Errors_ttypes.HAMPNotFoundException();
+        this.notFoundException.read(input);
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      default:
+        input.skip(ftype);
+    }
+    input.readFieldEnd();
+  }
+  input.readStructEnd();
+  return;
+};
+
+DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result.prototype.write = function(output) {
+  output.writeStructBegin('DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result');
+  if (this.success !== null && this.success !== undefined) {
+    output.writeFieldBegin('success', Thrift.Type.LIST, 0);
+    output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
+    for (var iter71 in this.success)
+    {
+      if (this.success.hasOwnProperty(iter71))
+      {
+        iter71 = this.success[iter71];
+        iter71.write(output);
       }
     }
     output.writeListEnd();
@@ -2297,18 +2991,18 @@ DataStore_getDatastatus_args.prototype.read = function(input) {
       break;
       case 2:
       if (ftype == Thrift.Type.LIST) {
-        var _size40 = 0;
-        var _rtmp344;
+        var _size72 = 0;
+        var _rtmp376;
         this.ids = [];
-        var _etype43 = 0;
-        _rtmp344 = input.readListBegin();
-        _etype43 = _rtmp344.etype;
-        _size40 = _rtmp344.size;
-        for (var _i45 = 0; _i45 < _size40; ++_i45)
+        var _etype75 = 0;
+        _rtmp376 = input.readListBegin();
+        _etype75 = _rtmp376.etype;
+        _size72 = _rtmp376.size;
+        for (var _i77 = 0; _i77 < _size72; ++_i77)
         {
-          var elem46 = null;
-          elem46 = input.readI64();
-          this.ids.push(elem46);
+          var elem78 = null;
+          elem78 = input.readI64();
+          this.ids.push(elem78);
         }
         input.readListEnd();
       } else {
@@ -2317,18 +3011,18 @@ DataStore_getDatastatus_args.prototype.read = function(input) {
       break;
       case 3:
       if (ftype == Thrift.Type.LIST) {
-        var _size47 = 0;
-        var _rtmp351;
+        var _size79 = 0;
+        var _rtmp383;
         this.hwms = [];
-        var _etype50 = 0;
-        _rtmp351 = input.readListBegin();
-        _etype50 = _rtmp351.etype;
-        _size47 = _rtmp351.size;
-        for (var _i52 = 0; _i52 < _size47; ++_i52)
+        var _etype82 = 0;
+        _rtmp383 = input.readListBegin();
+        _etype82 = _rtmp383.etype;
+        _size79 = _rtmp383.size;
+        for (var _i84 = 0; _i84 < _size79; ++_i84)
         {
-          var elem53 = null;
-          elem53 = input.readI64();
-          this.hwms.push(elem53);
+          var elem85 = null;
+          elem85 = input.readI64();
+          this.hwms.push(elem85);
         }
         input.readListEnd();
       } else {
@@ -2376,12 +3070,12 @@ DataStore_getDatastatus_args.prototype.write = function(output) {
   if (this.ids !== null && this.ids !== undefined) {
     output.writeFieldBegin('ids', Thrift.Type.LIST, 2);
     output.writeListBegin(Thrift.Type.I64, this.ids.length);
-    for (var iter54 in this.ids)
+    for (var iter86 in this.ids)
     {
-      if (this.ids.hasOwnProperty(iter54))
+      if (this.ids.hasOwnProperty(iter86))
       {
-        iter54 = this.ids[iter54];
-        output.writeI64(iter54);
+        iter86 = this.ids[iter86];
+        output.writeI64(iter86);
       }
     }
     output.writeListEnd();
@@ -2390,12 +3084,12 @@ DataStore_getDatastatus_args.prototype.write = function(output) {
   if (this.hwms !== null && this.hwms !== undefined) {
     output.writeFieldBegin('hwms', Thrift.Type.LIST, 3);
     output.writeListBegin(Thrift.Type.I64, this.hwms.length);
-    for (var iter55 in this.hwms)
+    for (var iter87 in this.hwms)
     {
-      if (this.hwms.hasOwnProperty(iter55))
+      if (this.hwms.hasOwnProperty(iter87))
       {
-        iter55 = this.hwms[iter55];
-        output.writeI64(iter55);
+        iter87 = this.hwms[iter87];
+        output.writeI64(iter87);
       }
     }
     output.writeListEnd();
@@ -2469,19 +3163,19 @@ DataStore_getDatastatus_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.LIST) {
-        var _size56 = 0;
-        var _rtmp360;
+        var _size88 = 0;
+        var _rtmp392;
         this.success = [];
-        var _etype59 = 0;
-        _rtmp360 = input.readListBegin();
-        _etype59 = _rtmp360.etype;
-        _size56 = _rtmp360.size;
-        for (var _i61 = 0; _i61 < _size56; ++_i61)
+        var _etype91 = 0;
+        _rtmp392 = input.readListBegin();
+        _etype91 = _rtmp392.etype;
+        _size88 = _rtmp392.size;
+        for (var _i93 = 0; _i93 < _size88; ++_i93)
         {
-          var elem62 = null;
-          elem62 = new Types_ttypes.Datastatus();
-          elem62.read(input);
-          this.success.push(elem62);
+          var elem94 = null;
+          elem94 = new Types_ttypes.Datastatus();
+          elem94.read(input);
+          this.success.push(elem94);
         }
         input.readListEnd();
       } else {
@@ -2526,12 +3220,12 @@ DataStore_getDatastatus_result.prototype.write = function(output) {
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.LIST, 0);
     output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
-    for (var iter63 in this.success)
+    for (var iter95 in this.success)
     {
-      if (this.success.hasOwnProperty(iter63))
+      if (this.success.hasOwnProperty(iter95))
       {
-        iter63 = this.success[iter63];
-        iter63.write(output);
+        iter95 = this.success[iter95];
+        iter95.write(output);
       }
     }
     output.writeListEnd();
@@ -2703,19 +3397,19 @@ DataStore_getSelectors_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.LIST) {
-        var _size64 = 0;
-        var _rtmp368;
+        var _size96 = 0;
+        var _rtmp3100;
         this.success = [];
-        var _etype67 = 0;
-        _rtmp368 = input.readListBegin();
-        _etype67 = _rtmp368.etype;
-        _size64 = _rtmp368.size;
-        for (var _i69 = 0; _i69 < _size64; ++_i69)
+        var _etype99 = 0;
+        _rtmp3100 = input.readListBegin();
+        _etype99 = _rtmp3100.etype;
+        _size96 = _rtmp3100.size;
+        for (var _i101 = 0; _i101 < _size96; ++_i101)
         {
-          var elem70 = null;
-          elem70 = new Types_ttypes.Response();
-          elem70.read(input);
-          this.success.push(elem70);
+          var elem102 = null;
+          elem102 = new Types_ttypes.Response();
+          elem102.read(input);
+          this.success.push(elem102);
         }
         input.readListEnd();
       } else {
@@ -2760,12 +3454,12 @@ DataStore_getSelectors_result.prototype.write = function(output) {
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.LIST, 0);
     output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
-    for (var iter71 in this.success)
+    for (var iter103 in this.success)
     {
-      if (this.success.hasOwnProperty(iter71))
+      if (this.success.hasOwnProperty(iter103))
       {
-        iter71 = this.success[iter71];
-        iter71.write(output);
+        iter103 = this.success[iter103];
+        iter103.write(output);
       }
     }
     output.writeListEnd();
@@ -3346,19 +4040,19 @@ DataStore_getAllMarkersInBounds_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.LIST) {
-        var _size72 = 0;
-        var _rtmp376;
+        var _size104 = 0;
+        var _rtmp3108;
         this.success = [];
-        var _etype75 = 0;
-        _rtmp376 = input.readListBegin();
-        _etype75 = _rtmp376.etype;
-        _size72 = _rtmp376.size;
-        for (var _i77 = 0; _i77 < _size72; ++_i77)
+        var _etype107 = 0;
+        _rtmp3108 = input.readListBegin();
+        _etype107 = _rtmp3108.etype;
+        _size104 = _rtmp3108.size;
+        for (var _i109 = 0; _i109 < _size104; ++_i109)
         {
-          var elem78 = null;
-          elem78 = new Types_ttypes.Marker();
-          elem78.read(input);
-          this.success.push(elem78);
+          var elem110 = null;
+          elem110 = new Types_ttypes.Marker();
+          elem110.read(input);
+          this.success.push(elem110);
         }
         input.readListEnd();
       } else {
@@ -3403,12 +4097,12 @@ DataStore_getAllMarkersInBounds_result.prototype.write = function(output) {
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.LIST, 0);
     output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
-    for (var iter79 in this.success)
+    for (var iter111 in this.success)
     {
-      if (this.success.hasOwnProperty(iter79))
+      if (this.success.hasOwnProperty(iter111))
       {
-        iter79 = this.success[iter79];
-        iter79.write(output);
+        iter111 = this.success[iter111];
+        iter111.write(output);
       }
     }
     output.writeListEnd();
@@ -3612,19 +4306,19 @@ DataStore_getAllTracksInBounds_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.LIST) {
-        var _size80 = 0;
-        var _rtmp384;
+        var _size112 = 0;
+        var _rtmp3116;
         this.success = [];
-        var _etype83 = 0;
-        _rtmp384 = input.readListBegin();
-        _etype83 = _rtmp384.etype;
-        _size80 = _rtmp384.size;
-        for (var _i85 = 0; _i85 < _size80; ++_i85)
+        var _etype115 = 0;
+        _rtmp3116 = input.readListBegin();
+        _etype115 = _rtmp3116.etype;
+        _size112 = _rtmp3116.size;
+        for (var _i117 = 0; _i117 < _size112; ++_i117)
         {
-          var elem86 = null;
-          elem86 = new Types_ttypes.Track();
-          elem86.read(input);
-          this.success.push(elem86);
+          var elem118 = null;
+          elem118 = new Types_ttypes.Track();
+          elem118.read(input);
+          this.success.push(elem118);
         }
         input.readListEnd();
       } else {
@@ -3669,12 +4363,12 @@ DataStore_getAllTracksInBounds_result.prototype.write = function(output) {
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.LIST, 0);
     output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
-    for (var iter87 in this.success)
+    for (var iter119 in this.success)
     {
-      if (this.success.hasOwnProperty(iter87))
+      if (this.success.hasOwnProperty(iter119))
       {
-        iter87 = this.success[iter87];
-        iter87.write(output);
+        iter119 = this.success[iter119];
+        iter119.write(output);
       }
     }
     output.writeListEnd();
@@ -4562,19 +5256,19 @@ DataStore_getAllPointsInBounds_result.prototype.read = function(input) {
     {
       case 0:
       if (ftype == Thrift.Type.LIST) {
-        var _size88 = 0;
-        var _rtmp392;
+        var _size120 = 0;
+        var _rtmp3124;
         this.success = [];
-        var _etype91 = 0;
-        _rtmp392 = input.readListBegin();
-        _etype91 = _rtmp392.etype;
-        _size88 = _rtmp392.size;
-        for (var _i93 = 0; _i93 < _size88; ++_i93)
+        var _etype123 = 0;
+        _rtmp3124 = input.readListBegin();
+        _etype123 = _rtmp3124.etype;
+        _size120 = _rtmp3124.size;
+        for (var _i125 = 0; _i125 < _size120; ++_i125)
         {
-          var elem94 = null;
-          elem94 = new Types_ttypes.Point();
-          elem94.read(input);
-          this.success.push(elem94);
+          var elem126 = null;
+          elem126 = new Types_ttypes.Point();
+          elem126.read(input);
+          this.success.push(elem126);
         }
         input.readListEnd();
       } else {
@@ -4619,12 +5313,12 @@ DataStore_getAllPointsInBounds_result.prototype.write = function(output) {
   if (this.success !== null && this.success !== undefined) {
     output.writeFieldBegin('success', Thrift.Type.LIST, 0);
     output.writeListBegin(Thrift.Type.STRUCT, this.success.length);
-    for (var iter95 in this.success)
+    for (var iter127 in this.success)
     {
-      if (this.success.hasOwnProperty(iter95))
+      if (this.success.hasOwnProperty(iter127))
       {
-        iter95 = this.success[iter95];
-        iter95.write(output);
+        iter127 = this.success[iter127];
+        iter127.write(output);
       }
     }
     output.writeListEnd();
@@ -5294,6 +5988,120 @@ DataStoreClient.prototype.recv_putSignalStrength = function(input,mtype,rseqid) 
   }
   return callback('putSignalStrength failed: unknown result');
 };
+DataStoreClient.prototype.putContestSet = function(authenticationToken, contestSet, callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_putContestSet(authenticationToken, contestSet);
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_putContestSet(authenticationToken, contestSet);
+  }
+};
+
+DataStoreClient.prototype.send_putContestSet = function(authenticationToken, contestSet) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('putContestSet', Thrift.MessageType.CALL, this.seqid());
+  var args = new DataStore_putContestSet_args();
+  args.authenticationToken = authenticationToken;
+  args.contestSet = contestSet;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+DataStoreClient.prototype.recv_putContestSet = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new DataStore_putContestSet_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.userException) {
+    return callback(result.userException);
+  }
+  if (null !== result.systemException) {
+    return callback(result.systemException);
+  }
+  if (null !== result.notFoundException) {
+    return callback(result.notFoundException);
+  }
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('putContestSet failed: unknown result');
+};
+DataStoreClient.prototype.putNotificationSet = function(authenticationToken, notificationSet, callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_putNotificationSet(authenticationToken, notificationSet);
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_putNotificationSet(authenticationToken, notificationSet);
+  }
+};
+
+DataStoreClient.prototype.send_putNotificationSet = function(authenticationToken, notificationSet) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('putNotificationSet', Thrift.MessageType.CALL, this.seqid());
+  var args = new DataStore_putNotificationSet_args();
+  args.authenticationToken = authenticationToken;
+  args.notificationSet = notificationSet;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+DataStoreClient.prototype.recv_putNotificationSet = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new DataStore_putNotificationSet_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.userException) {
+    return callback(result.userException);
+  }
+  if (null !== result.systemException) {
+    return callback(result.systemException);
+  }
+  if (null !== result.notFoundException) {
+    return callback(result.notFoundException);
+  }
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('putNotificationSet failed: unknown result');
+};
 DataStoreClient.prototype.putSelector = function(authenticationToken, selector, callback) {
   this._seqid = this.new_seqid();
   if (callback === undefined) {
@@ -5472,6 +6280,67 @@ DataStoreClient.prototype.recv_getNextModifiedRecordChunkLastVerOnly = function(
     return callback(null, result.success);
   }
   return callback('getNextModifiedRecordChunkLastVerOnly failed: unknown result');
+};
+DataStoreClient.prototype.getNextModifiedRecordChunkTracksLastVerOnly = function(authenticationToken, selector_id, datatypes, changeset_id, withPreviewResourcesData, withFullResourcesData, callback) {
+  this._seqid = this.new_seqid();
+  if (callback === undefined) {
+    var _defer = Q.defer();
+    this._reqs[this.seqid()] = function(error, result) {
+      if (error) {
+        _defer.reject(error);
+      } else {
+        _defer.resolve(result);
+      }
+    };
+    this.send_getNextModifiedRecordChunkTracksLastVerOnly(authenticationToken, selector_id, datatypes, changeset_id, withPreviewResourcesData, withFullResourcesData);
+    return _defer.promise;
+  } else {
+    this._reqs[this.seqid()] = callback;
+    this.send_getNextModifiedRecordChunkTracksLastVerOnly(authenticationToken, selector_id, datatypes, changeset_id, withPreviewResourcesData, withFullResourcesData);
+  }
+};
+
+DataStoreClient.prototype.send_getNextModifiedRecordChunkTracksLastVerOnly = function(authenticationToken, selector_id, datatypes, changeset_id, withPreviewResourcesData, withFullResourcesData) {
+  var output = new this.pClass(this.output);
+  output.writeMessageBegin('getNextModifiedRecordChunkTracksLastVerOnly', Thrift.MessageType.CALL, this.seqid());
+  var args = new DataStore_getNextModifiedRecordChunkTracksLastVerOnly_args();
+  args.authenticationToken = authenticationToken;
+  args.selector_id = selector_id;
+  args.datatypes = datatypes;
+  args.changeset_id = changeset_id;
+  args.withPreviewResourcesData = withPreviewResourcesData;
+  args.withFullResourcesData = withFullResourcesData;
+  args.write(output);
+  output.writeMessageEnd();
+  return this.output.flush();
+};
+
+DataStoreClient.prototype.recv_getNextModifiedRecordChunkTracksLastVerOnly = function(input,mtype,rseqid) {
+  var callback = this._reqs[rseqid] || function() {};
+  delete this._reqs[rseqid];
+  if (mtype == Thrift.MessageType.EXCEPTION) {
+    var x = new Thrift.TApplicationException();
+    x.read(input);
+    input.readMessageEnd();
+    return callback(x);
+  }
+  var result = new DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result();
+  result.read(input);
+  input.readMessageEnd();
+
+  if (null !== result.userException) {
+    return callback(result.userException);
+  }
+  if (null !== result.systemException) {
+    return callback(result.systemException);
+  }
+  if (null !== result.notFoundException) {
+    return callback(result.notFoundException);
+  }
+  if (null !== result.success) {
+    return callback(null, result.success);
+  }
+  return callback('getNextModifiedRecordChunkTracksLastVerOnly failed: unknown result');
 };
 DataStoreClient.prototype.getUser = function(authenticationToken, user_id, withPreviewResourcesData, withFullResourcesData, withAllCrumbs, callback) {
   this._seqid = this.new_seqid();
@@ -6493,6 +7362,88 @@ DataStoreProcessor.prototype.process_putSignalStrength = function(seqid, input, 
     });
   }
 };
+DataStoreProcessor.prototype.process_putContestSet = function(seqid, input, output) {
+  var args = new DataStore_putContestSet_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.putContestSet.length === 2) {
+    Q.fcall(this._handler.putContestSet, args.authenticationToken, args.contestSet)
+      .then(function(result) {
+        var result_obj = new DataStore_putContestSet_result({success: result});
+        output.writeMessageBegin("putContestSet", Thrift.MessageType.REPLY, seqid);
+        result_obj.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result;
+        if (err instanceof Errors_ttypes.HAMPUserException || err instanceof Errors_ttypes.HAMPSystemException || err instanceof Errors_ttypes.HAMPNotFoundException) {
+          result = new DataStore_putContestSet_result(err);
+          output.writeMessageBegin("putContestSet", Thrift.MessageType.REPLY, seqid);
+        } else {
+          result = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+          output.writeMessageBegin("putContestSet", Thrift.MessageType.EXCEPTION, seqid);
+        }
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.putContestSet(args.authenticationToken, args.contestSet, function (err, result) {
+      var result_obj;
+      if ((err === null || typeof err === 'undefined') || err instanceof Errors_ttypes.HAMPUserException || err instanceof Errors_ttypes.HAMPSystemException || err instanceof Errors_ttypes.HAMPNotFoundException) {
+        result_obj = new DataStore_putContestSet_result((err !== null || typeof err === 'undefined') ? err : {success: result});
+        output.writeMessageBegin("putContestSet", Thrift.MessageType.REPLY, seqid);
+      } else {
+        result_obj = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+        output.writeMessageBegin("putContestSet", Thrift.MessageType.EXCEPTION, seqid);
+      }
+      result_obj.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+};
+DataStoreProcessor.prototype.process_putNotificationSet = function(seqid, input, output) {
+  var args = new DataStore_putNotificationSet_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.putNotificationSet.length === 2) {
+    Q.fcall(this._handler.putNotificationSet, args.authenticationToken, args.notificationSet)
+      .then(function(result) {
+        var result_obj = new DataStore_putNotificationSet_result({success: result});
+        output.writeMessageBegin("putNotificationSet", Thrift.MessageType.REPLY, seqid);
+        result_obj.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result;
+        if (err instanceof Errors_ttypes.HAMPUserException || err instanceof Errors_ttypes.HAMPSystemException || err instanceof Errors_ttypes.HAMPNotFoundException) {
+          result = new DataStore_putNotificationSet_result(err);
+          output.writeMessageBegin("putNotificationSet", Thrift.MessageType.REPLY, seqid);
+        } else {
+          result = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+          output.writeMessageBegin("putNotificationSet", Thrift.MessageType.EXCEPTION, seqid);
+        }
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.putNotificationSet(args.authenticationToken, args.notificationSet, function (err, result) {
+      var result_obj;
+      if ((err === null || typeof err === 'undefined') || err instanceof Errors_ttypes.HAMPUserException || err instanceof Errors_ttypes.HAMPSystemException || err instanceof Errors_ttypes.HAMPNotFoundException) {
+        result_obj = new DataStore_putNotificationSet_result((err !== null || typeof err === 'undefined') ? err : {success: result});
+        output.writeMessageBegin("putNotificationSet", Thrift.MessageType.REPLY, seqid);
+      } else {
+        result_obj = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+        output.writeMessageBegin("putNotificationSet", Thrift.MessageType.EXCEPTION, seqid);
+      }
+      result_obj.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+};
 DataStoreProcessor.prototype.process_putSelector = function(seqid, input, output) {
   var args = new DataStore_putSelector_args();
   args.read(input);
@@ -6609,6 +7560,47 @@ DataStoreProcessor.prototype.process_getNextModifiedRecordChunkLastVerOnly = fun
       } else {
         result_obj = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
         output.writeMessageBegin("getNextModifiedRecordChunkLastVerOnly", Thrift.MessageType.EXCEPTION, seqid);
+      }
+      result_obj.write(output);
+      output.writeMessageEnd();
+      output.flush();
+    });
+  }
+};
+DataStoreProcessor.prototype.process_getNextModifiedRecordChunkTracksLastVerOnly = function(seqid, input, output) {
+  var args = new DataStore_getNextModifiedRecordChunkTracksLastVerOnly_args();
+  args.read(input);
+  input.readMessageEnd();
+  if (this._handler.getNextModifiedRecordChunkTracksLastVerOnly.length === 6) {
+    Q.fcall(this._handler.getNextModifiedRecordChunkTracksLastVerOnly, args.authenticationToken, args.selector_id, args.datatypes, args.changeset_id, args.withPreviewResourcesData, args.withFullResourcesData)
+      .then(function(result) {
+        var result_obj = new DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result({success: result});
+        output.writeMessageBegin("getNextModifiedRecordChunkTracksLastVerOnly", Thrift.MessageType.REPLY, seqid);
+        result_obj.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      }, function (err) {
+        var result;
+        if (err instanceof Errors_ttypes.HAMPUserException || err instanceof Errors_ttypes.HAMPSystemException || err instanceof Errors_ttypes.HAMPNotFoundException) {
+          result = new DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result(err);
+          output.writeMessageBegin("getNextModifiedRecordChunkTracksLastVerOnly", Thrift.MessageType.REPLY, seqid);
+        } else {
+          result = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+          output.writeMessageBegin("getNextModifiedRecordChunkTracksLastVerOnly", Thrift.MessageType.EXCEPTION, seqid);
+        }
+        result.write(output);
+        output.writeMessageEnd();
+        output.flush();
+      });
+  } else {
+    this._handler.getNextModifiedRecordChunkTracksLastVerOnly(args.authenticationToken, args.selector_id, args.datatypes, args.changeset_id, args.withPreviewResourcesData, args.withFullResourcesData, function (err, result) {
+      var result_obj;
+      if ((err === null || typeof err === 'undefined') || err instanceof Errors_ttypes.HAMPUserException || err instanceof Errors_ttypes.HAMPSystemException || err instanceof Errors_ttypes.HAMPNotFoundException) {
+        result_obj = new DataStore_getNextModifiedRecordChunkTracksLastVerOnly_result((err !== null || typeof err === 'undefined') ? err : {success: result});
+        output.writeMessageBegin("getNextModifiedRecordChunkTracksLastVerOnly", Thrift.MessageType.REPLY, seqid);
+      } else {
+        result_obj = new Thrift.TApplicationException(Thrift.TApplicationExceptionType.UNKNOWN, err.message);
+        output.writeMessageBegin("getNextModifiedRecordChunkTracksLastVerOnly", Thrift.MessageType.EXCEPTION, seqid);
       }
       result_obj.write(output);
       output.writeMessageEnd();

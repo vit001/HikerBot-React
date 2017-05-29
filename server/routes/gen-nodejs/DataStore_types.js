@@ -86,5 +86,5 @@ SyncState.prototype.write = function(output) {
   return;
 };
 
-ttypes.HAMP_VERSION_MAJOR = 14;
+ttypes.HAMP_VERSION_MAJOR = 20;
 ttypes.HAMP_VERSION_MINOR = 1;
