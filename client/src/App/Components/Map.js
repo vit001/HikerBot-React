@@ -41,6 +41,8 @@ const renderFeatures = (features) => {
 const HampGoogleMap = withGoogleMap(props => (
   <GoogleMap
     ref={props.onMapLoad}
+    onIdle={props.onMapIdle}
+    onLoad={props.onMapLoad}
     defaultZoom={6}
     defaultCenter={{ lat: 37.8, lng: -120 }}
   >
@@ -49,10 +51,17 @@ const HampGoogleMap = withGoogleMap(props => (
 ));
 
 class Map extends Component {
-  
+  _map;
+  /*
   componentDidMount() {
       const { dispatch } = this.props
       dispatch(fetchFeatures())
+  }
+  */
+  
+  redrawFeatures = () => {
+    const { dispatch } = this.props
+    dispatch(fetchFeatures(this._map.getBounds().toJSON(), this._map.getZoom()))
   }
 
   render() {
@@ -65,6 +74,8 @@ class Map extends Component {
         <div style={{ height: `100vh` }} />
       }
       features={features}
+      onMapIdle={ ()=> { this.redrawFeatures() } }
+      onMapLoad={ (map)=> { this._map = map;} }
     />
   }
 }
