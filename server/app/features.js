@@ -4,7 +4,7 @@ const router  = express.Router();
 const thrift     = require('thrift');
 const DataStore  = require('./gen-nodejs/DataStore');
 
-const SelectorPCT = 4;
+const PCT_SELECTOR_ID = 4;
 
 router.get('/', (req, res) => {
 
@@ -23,86 +23,54 @@ router.get('/', (req, res) => {
         transport: thrift.TFramedTransport
     });
     connection.on('connect', () => {
+
         const client = thrift.createClient(DataStore, connection);
 
-        let jsn = bounds;
-        let swlate6 = jsn.south * 1e6;
-        let swlone6 = jsn.west  * 1e6;
-        let nelate6 = jsn.north * 1e6;
-        let nelone6 = jsn.east  * 1e6;
+        const swlate6 = bounds.south * 1e6;
+        const swlone6 = bounds.west  * 1e6;
+        const nelate6 = bounds.north * 1e6;
+        const nelone6 = bounds.east  * 1e6;
 
         console.log(`grabbing from hamp server ${swlate6}, ${swlone6}, ${nelate6}, ${nelone6}, zoom: ${zoom}`);
 
-        client.getAllObjectsInBounds( SelectorPCT, swlate6, swlone6, nelate6, nelone6, zoom, (err, response) => {
+        client.getAllObjectsInBounds( PCT_SELECTOR_ID, swlate6, swlone6, nelate6, nelone6, zoom, (err, response) => {
 
-            console.log(`getPoints was called, received response len=${response.length} data=${response}`);
-
-            // Just show 50 points max
             if( err ) {
                 res.send('getAllPointsInBounds error:', err);
-            } else {
-                let features = [];
-                for (let i = 0; i < response.markers.length; i++) {
-                    let marker = response.markers[i];
+                return;
+            }
 
-                    let feature =
-                        {
-                            "type": "Feature",
-                            "properties": {
-                                "id": i,
-                                "type": "point",
-                                "name": marker.name,
-                                "iconFileName": marker.iconFileName,
-                                "description": marker.description
-                            },
-                            "geometry": {
-                                "type": "Point",
-                                "coordinates": [
-                                    marker.late6 * 1e-6,
-                                    marker.lone6 * 1e-6
-                                ]
-                            }
-                        };
+            if(response) {
+                
+                console.log("Recieved response from HAPM-server:", response);
 
-                    console.log(`received point ${JSON.stringify(feature)}`);
+                const markers = response.markers.map(m => 
+                    {
+                        return {
+                            "type": "point",
+                            "id": m.id,
+                            "name": m.name,
+                            "iconFileName": m.iconFileName,
+                            "description": m.description,
+                            "coordinates": [
+                                m.late6 * 1e-6,
+                                m.lone6 * 1e-6
+                            ]
+                        }
+                    });
+                
+                const lines = response.lines.map(l => {
+                        return {
+                            "type": "line",
+                            "id": l.id,
+                            "color": l.color,
+                            "name": l.name,
+                            "description": l.description,
+                            "coordinates": l.latlngs.map(ll => [ll.late6 * 1e-6, ll.lone6 * 1e-6])
+                        }
+                    });
 
-                    features.push(feature);
-                }
-                for (let i = 0; i < response.lines.length; i++) {
-                    let line = response.lines[i];
-
-                    // Create an array of lat/longs defining this line
-                    let latlongs = [];
-                    for (let j = 0; j < line.latlngs.length; j++) {
-                        let ll = line.latlngs[j];
-                        let latlong = [];
-                        latlong.push( ll.late6 * 1e-6 );
-                        latlong.push( ll.lone6 * 1e-6 );
-                        latlongs.push( latlong );
-                    }
-
-                    let feature =
-                        {
-                            "type": "Feature",
-                            "properties": {
-                                "id": response.markers.length + i,
-                                "type": "line",
-                                "color": line.color,
-                                "name": line.name,
-                                "description": line.description
-                            },
-                            "geometry": {
-                                "type": "LineString",
-                                "coordinates": latlongs
-                            }
-                        };
-                    console.log(`received line ${JSON.stringify(feature)}`);
-                    features.push( feature );
-                }
-
-                const resJson = features;
-                var len = features.length;
-                console.log(`sending result length ${len} ${JSON.stringify(resJson)}`);
+                const resJson = markers.concat(lines);
                 res.status(200).send(resJson);
             }
 
