@@ -8,7 +8,7 @@ export const features = (prevState = initialState, action) => {
             return prevState
         case actions.RECEIVE_FEATURES:
             let trFeatures = {};
-            action.payload.features.forEach(feature => trFeatures[feature.properties.id] = feature);
+            action.payload.features.forEach(feature => trFeatures[feature.id] = feature);
             return Object.assign({}, prevState, trFeatures);
         default:
             return prevState

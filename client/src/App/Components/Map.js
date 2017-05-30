@@ -7,12 +7,12 @@ const HIKERBOT_API_HOST = "http://api.hikerbot.com";
 const HIKERBOT_ICON_PATH = `${HIKERBOT_API_HOST}/mdpi`;
 
 const renderPoint = (point) => {
-    const {properties: {id, description, iconFileName}, geometry: {coordinates: [lat, lng]}} = point;
+    const { id, description, iconFileName, coordinates: [lat, lng] } = point;
     return <Marker key={id} position={{lat: lat, lng: lng}} title={description} icon={`${HIKERBOT_ICON_PATH}/${iconFileName}.png`}  />
 }
 
 const renderLine = (line) => {
-    const {properties: {id, color}, geometry: {coordinates}} = line;
+    const { id, color, coordinates } = line;
     return <Polyline
         key={id}
         path={coordinates.map && coordinates.map(c => {return { lat: c[0], lng: c[1] }})}
