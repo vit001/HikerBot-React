@@ -23,7 +23,6 @@ function receiveFeatures(features) {
 export function fetchFeatures(bounds = {south: 4.095870312146702, west: -136.3232421875, north: 53.469301532231576, east: -83.6767578125}, zoom = 5) {
   return dispatch => {
     dispatch(requestFeatures(bounds, zoom))
-    const body = JSON.stringify({bounds, zoom});
     return fetch('/server/features')
       .then(response => response.json())
       .then(features => dispatch(receiveFeatures(features)))

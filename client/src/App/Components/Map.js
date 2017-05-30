@@ -26,8 +26,8 @@ const renderLine = (line) => {
 }
 
 const renderFeatures = (features) => {
-  return features.map((feature) => {
-    switch(feature.properties.type) {
+  return features.map && features.map((feature) => {
+    switch(feature.type) {
       case "point":
         return renderPoint(feature);
       case "line":
@@ -83,7 +83,7 @@ class Map extends Component {
 const mapStateToProps = (state) => {
     const {features} = state;
     return {
-        features: Object.keys(features).map(id => features[id]),
+        features: features,
     }
 }
 

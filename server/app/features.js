@@ -48,7 +48,7 @@ router.get('/', (req, res) => {
                     {
                         return {
                             "type": "point",
-                            "id": m.id,
+                            "id": m.id.toString(),
                             "name": m.name,
                             "iconFileName": m.iconFileName,
                             "description": m.description,
@@ -62,7 +62,7 @@ router.get('/', (req, res) => {
                 const lines = response.lines.map(l => {
                         return {
                             "type": "line",
-                            "id": l.id,
+                            "id": l.id.toString() ,
                             "color": l.color,
                             "name": l.name,
                             "description": l.description,
