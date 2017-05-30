@@ -4,11 +4,19 @@ const router  = express.Router();
 const thrift     = require('thrift');
 const DataStore  = require('./gen-nodejs/DataStore');
 
-/* GET all points and tracks */
-
 const SelectorPCT = 4;
 
-router.post('/getPointsAndTracks', ({body: {bounds, zoom}}, res) => {
+router.get('/', (req, res) => {
+
+    // @todo: fix this after the server api change
+    const bounds = { 
+        south: 31.703614704575227, 
+        west: -126.580810546875, 
+        north: 43.431962730842606, 
+        east: -113.419189453125
+    };
+    const zoom = 9;
+
     console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
 
     const connection = thrift.createConnection("api.hikerbot.com", 8084, {

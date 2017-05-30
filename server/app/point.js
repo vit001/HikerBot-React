@@ -9,7 +9,7 @@ const DataStore  = require('./gen-nodejs/DataStore');
 const SelectorPCT = 4;
 const AuthToken   = null;
 
-router.post('/getDetailPoint', ({body: {id, version}}, res) => {
+router.get('/', ({body: {id, version}}, res) => {
     console.log(`getDetailPoint was called, id=${id}, version=${version}`);
 
     const connection = thrift.createConnection("api.hikerbot.com", 8084, {
