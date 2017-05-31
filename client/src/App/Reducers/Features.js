@@ -2,13 +2,18 @@ import * as actions from "../Actions/Actions";
 
 const initialState = {}
 
-export const features = (prevState = initialState, action) => {
+export const features = (state = initialState, action) => {
     switch (action.type) {
         case actions.REQUEST_FEATURES:
-            return prevState
+            return Object.assign({}, state, {
+                isFetching: true,
+            }) 
         case actions.RECEIVE_FEATURES:
-            return action.payload.features
+            return {
+                isFetching: false,
+                items: action.payload.features
+            }
         default:
-            return prevState
+            return state
     }
 }

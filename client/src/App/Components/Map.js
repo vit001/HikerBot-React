@@ -26,7 +26,7 @@ const renderLine = (line) => {
 }
 
 const renderFeatures = (features) => {
-  return features.map && features.map((feature) => {
+  return features && features.map && features.map((feature) => {
     switch(feature.type) {
       case "point":
         return renderPoint(feature);
@@ -41,8 +41,6 @@ const renderFeatures = (features) => {
 const HampGoogleMap = withGoogleMap(props => (
   <GoogleMap
     ref={props.onMapLoad}
-    onIdle={props.onMapIdle}
-    onLoad={props.onMapLoad}
     defaultZoom={6}
     defaultCenter={{ lat: 37.8, lng: -120 }}
   >
@@ -51,39 +49,32 @@ const HampGoogleMap = withGoogleMap(props => (
 ));
 
 class Map extends Component {
-  _map;
-  /*
+  
   componentDidMount() {
       const { dispatch } = this.props
       dispatch(fetchFeatures())
   }
-  */
-  
-  redrawFeatures = () => {
-    const { dispatch } = this.props
-    dispatch(fetchFeatures(this._map.getBounds().toJSON(), this._map.getZoom()))
-  }
 
   render() {
-    const { features } = this.props;
-    return <HampGoogleMap
+    const { items, isFetching } = this.props;
+    return <div><div>{isFetching && "LOADING..."}</div><HampGoogleMap
       containerElement={
         <div style={{ height: `100vh` }} />
       }
       mapElement={
         <div style={{ height: `100vh` }} />
       }
-      features={features}
-      onMapIdle={ ()=> { this.redrawFeatures() } }
-      onMapLoad={ (map)=> { this._map = map;} }
+      features={items}
     />
+    </div>
   }
 }
 
 const mapStateToProps = (state) => {
-    const {features} = state;
+    const { features } = state;
     return {
-        features: features,
+        items: features.items,
+        isFetching: features.isFetching,
     }
 }
 
