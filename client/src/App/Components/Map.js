@@ -1,15 +1,21 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchFeatures } from '../Actions/ActionCreators'
-import { withGoogleMap, GoogleMap, Marker, Polyline } from "react-google-maps";
+import { withGoogleMap, GoogleMap, Marker, Polyline, InfoWindow } from "react-google-maps";
 import { loader } from "./loader.css"
 
 const HIKERBOT_API_HOST = "http://api.hikerbot.com";
 const HIKERBOT_ICON_PATH = `${HIKERBOT_API_HOST}/mdpi`;
 
-const renderPoint = (point) => {
+const renderPoint = (point, onMarkerClick) => {
     const { id, description, iconFileName, coordinates: [lat, lng] } = point;
-    return <Marker key={id} position={{lat: lat, lng: lng}} title={description} icon={`${HIKERBOT_ICON_PATH}/${iconFileName}.png`}  />
+    return <Marker 
+      key={id} 
+      position={{lat: lat, lng: lng}} 
+      title={description} 
+      icon={`${HIKERBOT_ICON_PATH}/${iconFileName}.png`}
+      onClick={() => onMarkerClick(id, {lat: lat, lng: lng})}
+      />
 }
 
 const renderLine = (line) => {
@@ -26,11 +32,11 @@ const renderLine = (line) => {
     />
 }
 
-const renderFeatures = (features) => {
+const renderFeatures = (features, onMarkerClick) => {
   return features && features.map && features.map((feature) => {
     switch(feature.type) {
       case "point":
-        return renderPoint(feature);
+        return renderPoint(feature, onMarkerClick);
       case "line":
         return renderLine(feature);
       default:
@@ -47,16 +53,45 @@ const HampGoogleMap = withGoogleMap(props => (
     defaultZoom={6}
     defaultCenter={{ lat: 38.3534, lng: -120.2197 }} // @todo: calculate center by used area bounds
   >
-  { renderFeatures(props.features) }
+  { 
+    renderFeatures(props.features, props.onDetailOpen)
+  }
+
+  {
+    props.activeDetail && <InfoWindow onCloseClick={props.onDetailClose} position={{ lat: props.activeDetail.position.lat, lng: props.activeDetail.position.lng }}><div>test {props.activeDetail.id}</div></InfoWindow>
+  }
   </GoogleMap>
 ));
 
 class Map extends Component {
   _map;
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      activeDetail: null
+   };
+  }
+
   componentDidMount() {
       const { dispatch } = this.props
       dispatch(fetchFeatures())
+  }
+
+  openDetail = (id, position) => {
+    console.log(`Opening detail: ${id} at ${position}`);
+    this.setState((state) => (
+      {
+        activeDetail: {
+          id,
+          position,
+        } 
+      }))
+  }
+
+  closeDetail = () => {
+    console.log(`Closing detail: ${this.state.activeDetail.id}`);
+    this.setState((state) => ({ activeDetail: null }))
   }
 
   logZoom = () => {
@@ -81,7 +116,10 @@ class Map extends Component {
       }
       features={items}
       onMapIdle={ ()=> { this.logZoom() } }
-      onMapLoad={ (map)=> { this._map = map;} }
+      onMapLoad={ (map)=> { this._map = map } }
+      activeDetail={this.state.activeDetail}
+      onDetailOpen={this.openDetail}
+      onDetailClose={this.closeDetail}
     />
     </div>
   }
