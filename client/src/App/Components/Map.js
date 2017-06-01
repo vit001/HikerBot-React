@@ -7,15 +7,17 @@ import { loader } from "./loader.css"
 const HIKERBOT_API_HOST = "http://api.hikerbot.com";
 const HIKERBOT_ICON_PATH = `${HIKERBOT_API_HOST}/mdpi`;
 
-const renderPoint = (point, onMarkerClick) => {
-    const { id, description, iconFileName, coordinates: [lat, lng] } = point;
-    return <Marker 
-      key={id} 
-      position={{lat: lat, lng: lng}} 
-      title={description} 
-      icon={`${HIKERBOT_ICON_PATH}/${iconFileName}.png`}
-      onClick={() => onMarkerClick(id, {lat: lat, lng: lng})}
-      />
+const renderPoint = (point, currentZoom, onMarkerClick) => {
+    const { id, showFromZoom, showToZoom, description, iconFileName, coordinates: [lat, lng] } = point;
+    return currentZoom >= showFromZoom && currentZoom <= showToZoom ?
+      <Marker 
+        key={id} 
+        position={{lat: lat, lng: lng}} 
+        title={description} 
+        icon={`${HIKERBOT_ICON_PATH}/${iconFileName}.png`}
+        onClick={() => onMarkerClick(id, {lat: lat, lng: lng})}
+        />
+      : null;
 }
 
 const renderLine = (line) => {
@@ -32,11 +34,11 @@ const renderLine = (line) => {
     />
 }
 
-const renderFeatures = (features, onMarkerClick) => {
+const renderFeatures = (features, currentZoom, onMarkerClick) => {
   return features && features.map && features.map((feature) => {
     switch(feature.type) {
       case "point":
-        return renderPoint(feature, onMarkerClick);
+        return renderPoint(feature, currentZoom, onMarkerClick);
       case "line":
         return renderLine(feature);
       default:
@@ -54,7 +56,7 @@ const HampGoogleMap = withGoogleMap(props => (
     defaultCenter={{ lat: 38.3534, lng: -120.2197 }} // @todo: calculate center by used area bounds
   >
   { 
-    renderFeatures(props.features, props.onDetailOpen)
+    renderFeatures(props.features, props.currentZoom, props.onDetailOpen)
   }
 
   {
@@ -69,6 +71,7 @@ class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      currentZoom: 6,
       activeDetail: null
    };
   }
@@ -80,22 +83,27 @@ class Map extends Component {
 
   openDetail = (id, position) => {
     console.log(`Opening detail: ${id} at ${position}`);
-    this.setState((state) => (
-      {
-        activeDetail: {
+    this.setState((state) => Object.assign({}, state, {
+      activeDetail: {
           id,
           position,
-        } 
+        },
       }))
   }
 
   closeDetail = () => {
     console.log(`Closing detail: ${this.state.activeDetail.id}`);
-    this.setState((state) => ({ activeDetail: null }))
+    this.setState((state) => Object.assign({}, state, {
+      activeDetail: null,
+    }))
   }
 
-  logZoom = () => {
-    console.log(`Current zoom: ${this._map.getZoom()}`);
+  setZoom = () => {
+    const zoom = this._map.getZoom();
+    console.log(`Setting zoom to: ${zoom}`);
+    this.setState((state) => Object.assign({}, state, {
+      currentZoom: zoom,
+    }))
   }
 
   render() {
@@ -115,8 +123,9 @@ class Map extends Component {
         <div style={{ height: "100vh" }} />
       }
       features={items}
-      onMapIdle={ ()=> { this.logZoom() } }
+      onMapIdle={ ()=> { this.setZoom() } }
       onMapLoad={ (map)=> { this._map = map } }
+      currentZoom={this.state.currentZoom}
       activeDetail={this.state.activeDetail}
       onDetailOpen={this.openDetail}
       onDetailClose={this.closeDetail}

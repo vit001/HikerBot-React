@@ -49,6 +49,8 @@ router.get('/', (req, res) => {
                         return {
                             "type": "point",
                             "id": m.id.toString(),
+                            "showFromZoom": m.showZoomMin / 1e5,
+                            "showToZoom": m.showZoomMax / 1e5,
                             "name": m.name,
                             "iconFileName": m.iconFileName,
                             "description": m.description,
