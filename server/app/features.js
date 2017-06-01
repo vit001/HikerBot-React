@@ -46,7 +46,6 @@ router.get('/', (req, res) => {
 
                 const markers = response.markers.map(m => 
                     {
-                        console.log("showZoomMin", m.showZoomMin, "showFromZoom", m.showZoomMin / 1e5);
                         return {
                             "type": "point",
                             "id": m.id.toString(),

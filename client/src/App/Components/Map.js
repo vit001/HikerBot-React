@@ -7,9 +7,9 @@ import { loader } from "./loader.css"
 const HIKERBOT_API_HOST = "http://api.hikerbot.com";
 const HIKERBOT_ICON_PATH = `${HIKERBOT_API_HOST}/mdpi`;
 
-const renderPoint = (point, currentZoom, onMarkerClick) => {
+const renderPoint = (point, currentBounds, currentZoom, onMarkerClick) => {
     const { id, showFromZoom, showToZoom, description, iconFileName, coordinates: [lat, lng] } = point;
-    return currentZoom >= showFromZoom && currentZoom <= showToZoom ?
+    return currentBounds.contains({lat: lat, lng: lng}) && currentZoom >= showFromZoom && currentZoom <= showToZoom ?
       <Marker 
         key={id} 
         position={{lat: lat, lng: lng}} 
@@ -34,11 +34,11 @@ const renderLine = (line) => {
     />
 }
 
-const renderFeatures = (features, currentZoom, onMarkerClick) => {
+const renderFeatures = (features, currentBounds, currentZoom, onMarkerClick) => {
   return features && features.map && features.map((feature) => {
     switch(feature.type) {
       case "point":
-        return renderPoint(feature, currentZoom, onMarkerClick);
+        return renderPoint(feature, currentBounds, currentZoom, onMarkerClick);
       case "line":
         return renderLine(feature);
       default:
@@ -56,7 +56,7 @@ const HampGoogleMap = withGoogleMap(props => (
     defaultCenter={{ lat: 38.3534, lng: -120.2197 }} // @todo: calculate center by used area bounds
   >
   { 
-    renderFeatures(props.features, props.currentZoom, props.onDetailOpen)
+    renderFeatures(props.features, props.currentBounds, props.currentZoom, props.onDetailOpen)
   }
 
   {
@@ -71,7 +71,8 @@ class Map extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      currentZoom: 6,
+      currentZoom: null,
+      currentBounds: null,
       activeDetail: null
    };
   }
@@ -98,11 +99,14 @@ class Map extends Component {
     }))
   }
 
-  setZoom = () => {
+  setBoundsAndZoom = () => {
+    const bounds = this._map.getBounds();
     const zoom = this._map.getZoom();
     console.log(`Setting zoom to: ${zoom}`);
+    console.log(`Setting bounds to: ${bounds}`);
     this.setState((state) => Object.assign({}, state, {
       currentZoom: zoom,
+      currentBounds: bounds,
     }))
   }
 
@@ -123,9 +127,10 @@ class Map extends Component {
         <div style={{ height: "100vh" }} />
       }
       features={items}
-      onMapIdle={ ()=> { this.setZoom() } }
+      onMapIdle={ ()=> { this.setBoundsAndZoom() } }
       onMapLoad={ (map)=> { this._map = map } }
       currentZoom={this.state.currentZoom}
+      currentBounds={this.state.currentBounds}
       activeDetail={this.state.activeDetail}
       onDetailOpen={this.openDetail}
       onDetailClose={this.closeDetail}
