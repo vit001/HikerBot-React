@@ -42,7 +42,7 @@ router.get('/', (req, res) => {
 
             if(response) {
                 
-                console.log("Recieved response from HAPM-server:", response);
+                console.log("Recieved response from HAMP-server:", response);
 
                 const markers = response.markers.map(m => 
                     {
