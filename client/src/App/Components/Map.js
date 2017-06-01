@@ -45,7 +45,7 @@ const HampGoogleMap = withGoogleMap(props => (
     onIdle={props.onMapIdle}
     onLoad={props.onMapLoad}
     defaultZoom={6}
-    defaultCenter={{ lat: 37.8, lng: -120 }}
+    defaultCenter={{ lat: 38.3534, lng: -120.2197 }} // @todo: calculate center by used area bounds
   >
   { renderFeatures(props.features) }
   </GoogleMap>
