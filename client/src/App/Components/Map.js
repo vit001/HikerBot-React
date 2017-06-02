@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchFeatures } from '../Actions/ActionCreators'
 import { withGoogleMap, GoogleMap, Marker, Polyline, InfoWindow } from "react-google-maps";
-import { loader } from "./loader.css"
 
 const HIKERBOT_API_HOST = "http://api.hikerbot.com";
 const HIKERBOT_ICON_PATH = `${HIKERBOT_API_HOST}/mdpi`;
@@ -107,15 +106,8 @@ class Map extends Component {
   }
 
   render() {
-    const { items, isFetching } = this.props;          
-    return <div style={{ height: "100vh", position: "relative"}}>
-      { 
-        isFetching && 
-        <div style={{position: "absolute", left: "50%", top: "50%", transform: "translate(-50%, -50%)", fontSize: "40px", zIndex: 1}}>
-          <div className="loader" />
-        </div>
-      }
-    <HampGoogleMap
+    const { items } = this.props;          
+    return <HampGoogleMap
       containerElement={
         <div style={{ height: "100vh" }} />
       }
@@ -131,7 +123,6 @@ class Map extends Component {
       onDetailOpen={this.openDetail}
       onDetailClose={this.closeDetail}
     />
-    </div>
   }
 }
 
