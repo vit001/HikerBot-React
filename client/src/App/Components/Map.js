@@ -77,11 +77,6 @@ class Map extends Component {
    };
   }
 
-  componentDidMount() {
-      const { dispatch } = this.props
-      dispatch(fetchFeatures())
-  }
-
   openDetail = (id, position) => {
     console.log(`Opening detail: ${id} at ${position}`);
     this.setState((state) => Object.assign({}, state, {
@@ -99,15 +94,16 @@ class Map extends Component {
     }))
   }
 
-  setBoundsAndZoom = () => {
+  updateMap = () => {
+    const { dispatch } = this.props;
     const bounds = this._map.getBounds();
     const zoom = this._map.getZoom();
-    console.log(`Setting zoom to: ${zoom}`);
-    console.log(`Setting bounds to: ${bounds}`);
+    dispatch(fetchFeatures(bounds, zoom));
+    console.log(`Setting bounds to ${bounds} and zoom to ${zoom}`);
     this.setState((state) => Object.assign({}, state, {
       currentZoom: zoom,
       currentBounds: bounds,
-    }))
+    }));
   }
 
   render() {
@@ -127,7 +123,7 @@ class Map extends Component {
         <div style={{ height: "100vh" }} />
       }
       features={items}
-      onMapIdle={ ()=> { this.setBoundsAndZoom() } }
+      onMapIdle={ ()=> { this.updateMap() } }
       onMapLoad={ (map)=> { this._map = map } }
       currentZoom={this.state.currentZoom}
       currentBounds={this.state.currentBounds}
