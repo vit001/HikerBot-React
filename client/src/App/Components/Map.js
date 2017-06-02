@@ -136,10 +136,10 @@ class Map extends Component {
 }
 
 const mapStateToProps = (state) => {
-    const { features } = state;
+    const { features: {items, isFetching} } = state;
     return {
-        items: features.items,
-        isFetching: features.isFetching,
+        items: items && Object.keys(items).map(id => items[id]),
+        isFetching,
     }
 }
 
