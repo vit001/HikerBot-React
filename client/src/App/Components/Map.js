@@ -19,7 +19,7 @@ const renderPoint = (point, currentBounds, currentZoom, onMarkerClick) => {
       : null;
 }
 
-const renderLine = (line) => {
+const renderLine = (line, currentZoom) => {
     const { id, color, coordinates } = line;
     return <Polyline
         key={id}
@@ -39,7 +39,7 @@ const renderFeatures = (features, currentBounds, currentZoom, onMarkerClick) => 
       case "point":
         return renderPoint(feature, currentBounds, currentZoom, onMarkerClick);
       case "line":
-        return renderLine(feature);
+        return renderLine(feature, currentZoom);
       default:
         return null;
     }
@@ -51,8 +51,8 @@ const HampGoogleMap = withGoogleMap(props => (
     ref={props.onMapLoad}
     onIdle={props.onMapIdle}
     onLoad={props.onMapLoad}
-    defaultZoom={6}
-    defaultCenter={{ lat: 38.3534, lng: -120.2197 }} // @todo: calculate center by used area bounds
+    defaultZoom={5}
+    defaultCenter={{ lat: 40.69, lng: -121.23 }} // @todo: calculate center by used area bounds
   >
   { 
     renderFeatures(props.features, props.currentBounds, props.currentZoom, props.onDetailOpen)
@@ -99,6 +99,8 @@ class Map extends Component {
     const zoom = this._map.getZoom();
     dispatch(fetchFeatures(bounds, zoom));
     console.log(`Setting bounds to ${bounds} and zoom to ${zoom}`);
+    console.log(`Setting center to ${this._map.getCenter()}`);
+
     this.setState((state) => Object.assign({}, state, {
       currentZoom: zoom,
       currentBounds: bounds,
