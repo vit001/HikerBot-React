@@ -9,10 +9,12 @@ export const features = (state = initialState, action) => {
                 isFetching: true,
             }) 
         case actions.RECEIVE_FEATURES:
-            return {
+            let mergedFeatures = {};
+            action.payload.features.forEach(feature => mergedFeatures[feature.id] = feature);
+            return Object.assign({}, state, {
                 isFetching: false,
-                items: action.payload.features
-            }
+                items: mergedFeatures
+            });
         default:
             return state
     }
