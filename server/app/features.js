@@ -6,16 +6,15 @@ const DataStore  = require('./gen-nodejs/DataStore');
 
 const PCT_SELECTOR_ID = 4;
 
-router.get('/', (req, res) => {
+router.get('/bounds/:south/:west/:north/:east/zoom/:zoom', (req, res) => {
 
-    // @todo: fix this after the server api change
     const bounds = { 
-        south: 31.703614704575227, 
-        west: -126.580810546875, 
-        north: 43.431962730842606, 
-        east: -113.419189453125
+        south: req.params.south, 
+        west: req.params.west, 
+        north: req.params.north, 
+        east: req.params.east
     };
-    const zoom = 9;
+    const zoom = req.params.zoom;
 
     console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
 
