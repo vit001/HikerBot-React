@@ -5815,9 +5815,11 @@ Marker.prototype.write = function(output) {
   return;
 };
 
-var LatLng = module.exports.LatLng = function(args) {
+var LinePoint = module.exports.LinePoint = function(args) {
   this.late6 = null;
   this.lone6 = null;
+  this.seq_number = null;
+  this.zlfo = null;
   if (args) {
     if (args.late6 !== undefined && args.late6 !== null) {
       this.late6 = args.late6;
@@ -5825,10 +5827,16 @@ var LatLng = module.exports.LatLng = function(args) {
     if (args.lone6 !== undefined && args.lone6 !== null) {
       this.lone6 = args.lone6;
     }
+    if (args.seq_number !== undefined && args.seq_number !== null) {
+      this.seq_number = args.seq_number;
+    }
+    if (args.zlfo !== undefined && args.zlfo !== null) {
+      this.zlfo = args.zlfo;
+    }
   }
 };
-LatLng.prototype = {};
-LatLng.prototype.read = function(input) {
+LinePoint.prototype = {};
+LinePoint.prototype.read = function(input) {
   input.readStructBegin();
   while (true)
   {
@@ -5855,6 +5863,20 @@ LatLng.prototype.read = function(input) {
         input.skip(ftype);
       }
       break;
+      case 3:
+      if (ftype == Thrift.Type.I64) {
+        this.seq_number = input.readI64();
+      } else {
+        input.skip(ftype);
+      }
+      break;
+      case 4:
+      if (ftype == Thrift.Type.I32) {
+        this.zlfo = input.readI32();
+      } else {
+        input.skip(ftype);
+      }
+      break;
       default:
         input.skip(ftype);
     }
@@ -5864,8 +5886,8 @@ LatLng.prototype.read = function(input) {
   return;
 };
 
-LatLng.prototype.write = function(output) {
-  output.writeStructBegin('LatLng');
+LinePoint.prototype.write = function(output) {
+  output.writeStructBegin('LinePoint');
   if (this.late6 !== null && this.late6 !== undefined) {
     output.writeFieldBegin('late6', Thrift.Type.I32, 1);
     output.writeI32(this.late6);
@@ -5874,6 +5896,16 @@ LatLng.prototype.write = function(output) {
   if (this.lone6 !== null && this.lone6 !== undefined) {
     output.writeFieldBegin('lone6', Thrift.Type.I32, 2);
     output.writeI32(this.lone6);
+    output.writeFieldEnd();
+  }
+  if (this.seq_number !== null && this.seq_number !== undefined) {
+    output.writeFieldBegin('seq_number', Thrift.Type.I64, 3);
+    output.writeI64(this.seq_number);
+    output.writeFieldEnd();
+  }
+  if (this.zlfo !== null && this.zlfo !== undefined) {
+    output.writeFieldBegin('zlfo', Thrift.Type.I32, 4);
+    output.writeI32(this.zlfo);
     output.writeFieldEnd();
   }
   output.writeFieldStop();
@@ -5887,7 +5919,7 @@ var Line = module.exports.Line = function(args) {
   this.name = null;
   this.description = null;
   this.color = null;
-  this.latlngs = null;
+  this.linePoints = null;
   this.tags = null;
   this.resources = null;
   this.selector_ids = null;
@@ -5907,8 +5939,8 @@ var Line = module.exports.Line = function(args) {
     if (args.color !== undefined && args.color !== null) {
       this.color = args.color;
     }
-    if (args.latlngs !== undefined && args.latlngs !== null) {
-      this.latlngs = Thrift.copyList(args.latlngs, [ttypes.LatLng]);
+    if (args.linePoints !== undefined && args.linePoints !== null) {
+      this.linePoints = Thrift.copyList(args.linePoints, [ttypes.LinePoint]);
     }
     if (args.tags !== undefined && args.tags !== null) {
       this.tags = Thrift.copyList(args.tags, [ttypes.Tag]);
@@ -5974,7 +6006,7 @@ Line.prototype.read = function(input) {
       if (ftype == Thrift.Type.LIST) {
         var _size350 = 0;
         var _rtmp3354;
-        this.latlngs = [];
+        this.linePoints = [];
         var _etype353 = 0;
         _rtmp3354 = input.readListBegin();
         _etype353 = _rtmp3354.etype;
@@ -5982,9 +6014,9 @@ Line.prototype.read = function(input) {
         for (var _i355 = 0; _i355 < _size350; ++_i355)
         {
           var elem356 = null;
-          elem356 = new ttypes.LatLng();
+          elem356 = new ttypes.LinePoint();
           elem356.read(input);
-          this.latlngs.push(elem356);
+          this.linePoints.push(elem356);
         }
         input.readListEnd();
       } else {
@@ -6089,14 +6121,14 @@ Line.prototype.write = function(output) {
     output.writeString(this.color);
     output.writeFieldEnd();
   }
-  if (this.latlngs !== null && this.latlngs !== undefined) {
-    output.writeFieldBegin('latlngs', Thrift.Type.LIST, 6);
-    output.writeListBegin(Thrift.Type.STRUCT, this.latlngs.length);
-    for (var iter378 in this.latlngs)
+  if (this.linePoints !== null && this.linePoints !== undefined) {
+    output.writeFieldBegin('linePoints', Thrift.Type.LIST, 6);
+    output.writeListBegin(Thrift.Type.STRUCT, this.linePoints.length);
+    for (var iter378 in this.linePoints)
     {
-      if (this.latlngs.hasOwnProperty(iter378))
+      if (this.linePoints.hasOwnProperty(iter378))
       {
-        iter378 = this.latlngs[iter378];
+        iter378 = this.linePoints[iter378];
         iter378.write(output);
       }
     }
