@@ -18,7 +18,7 @@ router.get('/bounds/:south/:west/:north/:east/zoom/:zoom', (req, res) => {
 
     console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
 
-    const connection = thrift.createConnection("api.hikerbot.com", 8084, {
+    const connection = thrift.createConnection("api.hikerbot.com",  8084, {
         transport: thrift.TFramedTransport
     });
     connection.on('connect', () => {
@@ -67,7 +67,12 @@ router.get('/bounds/:south/:west/:north/:east/zoom/:zoom', (req, res) => {
                             "color": l.color,
                             "name": l.name,
                             "description": l.description,
-                            "coordinates": l.latlngs.map(ll => [ll.late6 * 1e-6, ll.lone6 * 1e-6])
+                            "points": l.linePoints.map(lp => [{
+                                id: lp.seq_number.toString(),
+                                lat: lp.late6 * 1e-6, 
+                                lng: lp.lone6 * 1e-6,
+                                showFromZoom: lp.zlfo,
+                            }])
                         }
                     });
 

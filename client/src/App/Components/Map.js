@@ -20,10 +20,14 @@ const renderPoint = (point, currentBounds, currentZoom, onMarkerClick) => {
 }
 
 const renderLine = (line, currentZoom) => {
-    const { id, color, coordinates } = line;
+    const { id, color, points } = line;
     return <Polyline
         key={id}
-        path={coordinates.map && coordinates.map(c => {return { lat: c[0], lng: c[1] }})}
+        path={points.map && points
+          .filter((point) => currentZoom >= point[0].showFromZoom )
+          .map(c => {
+            return { lat: c[0].lat, lng: c[0].lng }
+            })}
         options={{
           geodesic: true,
           strokeColor: color,
