@@ -19,12 +19,12 @@ const renderPoint = (point, currentBounds, currentZoom, onMarkerClick) => {
       : null;
 }
 
-const renderLine = (line, currentZoom) => {
+const renderLine = (line, currentBounds, currentZoom) => {
     const { id, color, points } = line;
     return <Polyline
         key={id}
         path={points.map && points
-          .filter((point) => currentZoom >= point[0].showFromZoom )
+          .filter((point) => currentBounds.contains({lat: point[0].lat, lng: point[0].lng}) && currentZoom >= point[0].showFromZoom )
           .map(c => {
             return { lat: c[0].lat, lng: c[0].lng }
             })}
@@ -43,7 +43,7 @@ const renderFeatures = (features, currentBounds, currentZoom, onMarkerClick) => 
       case "point":
         return renderPoint(feature, currentBounds, currentZoom, onMarkerClick);
       case "line":
-        return renderLine(feature, currentZoom);
+        return renderLine(feature, currentBounds, currentZoom);
       default:
         return null;
     }
