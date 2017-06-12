@@ -6,6 +6,26 @@ import { withGoogleMap, GoogleMap, Marker, Polyline, InfoWindow } from "react-go
 const HIKERBOT_API_HOST = "http://api.hikerbot.com";
 const HIKERBOT_ICON_PATH = `${HIKERBOT_API_HOST}/mdpi`;
 
+const getExtendedBounds = (map) => {
+  const bounds = map.getBounds();
+  const projection = map.getProjection();
+
+  const trll = new google.maps.LatLng(bounds.getNorthEast().lat(), bounds.getNorthEast().lng());
+  const blll = new google.maps.LatLng(bounds.getSouthWest().lat(), bounds.getSouthWest().lng());
+  const trpo = projection.fromLatLngToPoint(trll);
+  const blpo = projection.fromLatLngToPoint(blll);
+  
+  const mapHeight = Math.abs(trpo.y - blpo.y);
+  const mapWidth = Math.abs(blpo.x - trpo.x);
+  const trX = trpo.x + mapWidth;
+  const trY = trpo.y - mapHeight;
+  const blX = blpo.x - mapWidth;
+  const blY = blpo.y + mapHeight;
+
+  return new google.maps.LatLngBounds(projection.fromPointToLatLng({x: blX, y: blY}),
+    projection.fromPointToLatLng({x: trX, y: trY}));
+}
+
 const renderPoint = (point, currentBounds, currentZoom, onMarkerClick) => {
     const { id, showFromZoom, showToZoom, description, iconFileName, coordinates: [lat, lng] } = point;
     return currentBounds.contains({lat: lat, lng: lng}) && currentZoom >= showFromZoom && currentZoom <= showToZoom ?
@@ -99,15 +119,14 @@ class Map extends Component {
 
   updateMap = () => {
     const { dispatch } = this.props;
-    const bounds = this._map.getBounds();
+    const extendedBounds = getExtendedBounds(this._map);
     const zoom = this._map.getZoom();
-    dispatch(fetchFeatures(bounds, zoom));
-    console.log(`Setting bounds to ${bounds} and zoom to ${zoom}`);
+    dispatch(fetchFeatures(extendedBounds, zoom));
+    console.log(`Setting bounds to ${extendedBounds} and zoom to ${zoom}`);
     console.log(`Setting center to ${this._map.getCenter()}`);
-
     this.setState((state) => Object.assign({}, state, {
       currentZoom: zoom,
-      currentBounds: bounds,
+      currentBounds: extendedBounds,
     }));
   }
 
