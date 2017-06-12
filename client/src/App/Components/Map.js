@@ -1,3 +1,4 @@
+/* global google */
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { fetchFeatures } from '../Actions/ActionCreators'
