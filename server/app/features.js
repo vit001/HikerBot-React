@@ -6,20 +6,19 @@ const DataStore  = require('./gen-nodejs/DataStore');
 
 const PCT_SELECTOR_ID = 4;
 
-router.get('/', (req, res) => {
+router.get('/bounds/:south/:west/:north/:east/zoom/:zoom', (req, res) => {
 
-    // @todo: fix this after the server api change
     const bounds = { 
-        south: 31.703614704575227, 
-        west: -126.580810546875, 
-        north: 43.431962730842606, 
-        east: -113.419189453125
+        south: req.params.south, 
+        west: req.params.west, 
+        north: req.params.north, 
+        east: req.params.east
     };
-    const zoom = 9;
+    const zoom = req.params.zoom;
 
     console.log(`getPoints was called, bounds: ${JSON.stringify(bounds)}, zoom: ${zoom}`);
 
-    const connection = thrift.createConnection("api.hikerbot.com", 8084, {
+    const connection = thrift.createConnection("api.hikerbot.com",  8084, {
         transport: thrift.TFramedTransport
     });
     connection.on('connect', () => {
@@ -68,7 +67,12 @@ router.get('/', (req, res) => {
                             "color": l.color,
                             "name": l.name,
                             "description": l.description,
-                            "coordinates": l.latlngs.map(ll => [ll.late6 * 1e-6, ll.lone6 * 1e-6])
+                            "points": l.linePoints.map(lp => [{
+                                id: lp.seq_number.toString(),
+                                lat: lp.late6 * 1e-6, 
+                                lng: lp.lone6 * 1e-6,
+                                showFromZoom: lp.zlfo,
+                            }])
                         }
                     });
 

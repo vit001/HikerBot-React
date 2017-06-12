@@ -9,10 +9,10 @@ export const features = (state = initialState, action) => {
                 isFetching: true,
             }) 
         case actions.RECEIVE_FEATURES:
-            return {
+            return Object.assign({}, state, {
                 isFetching: false,
-                items: action.payload.features
-            }
+                items: Object.assign({}, ...action.payload.features.map((feature) => ({ [feature.id]: feature })))
+            });
         default:
             return state
     }

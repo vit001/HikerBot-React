@@ -1,5 +1,4 @@
 const express = require('express');
-const apicache = require('apicache');
 const path = require('path');
 const logger = require('morgan');
 const cookieParser = require('cookie-parser');
@@ -9,9 +8,6 @@ const features = require('./app/features');
 const point = require('./app/point');
 
 const app = express();
-
-let cache = apicache.middleware
-app.use(cache('5 minutes'))
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
