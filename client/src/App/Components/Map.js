@@ -73,6 +73,9 @@ const renderFeatures = (features, currentBounds, currentZoom, onMarkerClick) => 
 const HampGoogleMap = withGoogleMap(props => (
   <GoogleMap
     ref={props.onMapLoad}
+    options={{
+      clickableIcons: false,
+    }}
     onIdle={props.onMapIdle}
     onLoad={props.onMapLoad}
     defaultZoom={5}
