@@ -8,10 +8,10 @@ const PCT_SELECTOR_ID = 4;
 
 router.get('/bounds/:south/:west/:north/:east/zoom/:zoom', (req, res) => {
 
-    const bounds = { 
-        south: req.params.south, 
-        west: req.params.west, 
-        north: req.params.north, 
+    const bounds = {
+        south: req.params.south,
+        west: req.params.west,
+        north: req.params.north,
         east: req.params.east
     };
     const zoom = req.params.zoom;
@@ -40,13 +40,13 @@ router.get('/bounds/:south/:west/:north/:east/zoom/:zoom', (req, res) => {
             }
 
             if(response) {
-                
+
                 console.log("Recieved response from HAMP-server:", response);
 
-                const markers = response.markers.map(m => 
+                const markers = response.markers.map(m =>
                     {
                         return {
-                            "type": "point",
+                            "type": m.markerType == 3 ? "town" : "point",
                             "id": m.id.toString(),
                             "showFromZoom": m.showZoomMin / 1e3,
                             "showToZoom": m.showZoomMax / 1e3,
@@ -59,7 +59,7 @@ router.get('/bounds/:south/:west/:north/:east/zoom/:zoom', (req, res) => {
                             ]
                         }
                     });
-                
+
                 const lines = response.lines.map(l => {
                         return {
                             "type": "line",
@@ -69,7 +69,7 @@ router.get('/bounds/:south/:west/:north/:east/zoom/:zoom', (req, res) => {
                             "description": l.description,
                             "points": l.linePoints.map(lp => [{
                                 id: lp.seq_number.toString(),
-                                lat: lp.late6 * 1e-6, 
+                                lat: lp.late6 * 1e-6,
                                 lng: lp.lone6 * 1e-6,
                                 showFromZoom: lp.zlfo,
                             }])

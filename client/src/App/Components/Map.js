@@ -6,6 +6,7 @@ import { withGoogleMap, GoogleMap, Marker, Polyline, InfoWindow } from "react-go
 
 const HIKERBOT_API_HOST = "http://api.hikerbot.com";
 const HIKERBOT_ICON_PATH = `${HIKERBOT_API_HOST}/mdpi`;
+const HIKERBOT_TOWN_ICON_PATH = `${HIKERBOT_API_HOST}/gen_town_marker.php`;
 const EXTEND_BOUNDS_FROM_ZOOM = 7;
 
 const getExtendedBounds = (map) => {
@@ -29,16 +30,29 @@ const getExtendedBounds = (map) => {
 }
 
 const renderPoint = (point, currentBounds, currentZoom, onMarkerClick) => {
-    const { id, showFromZoom, showToZoom, description, iconFileName, coordinates: [lat, lng] } = point;
-    return currentBounds.contains({lat: lat, lng: lng}) && currentZoom >= showFromZoom && currentZoom <= showToZoom ?
-      <Marker 
-        key={id} 
-        position={{lat: lat, lng: lng}} 
-        title={description} 
-        icon={`${HIKERBOT_ICON_PATH}/${iconFileName}.png`}
-        onClick={() => onMarkerClick(id, {lat: lat, lng: lng})}
-        />
-      : null;
+    const { id, markerType, showFromZoom, showToZoom, name, description, iconFileName, coordinates: [lat, lng] } = point;
+    if ( markerType == 3 ) {
+    	return currentBounds.contains({lat: lat, lng: lng}) && currentZoom >= showFromZoom && currentZoom <= showToZoom ?
+      		<Marker
+        	key={id}
+        	position={{lat: lat, lng: lng}}
+        	title={description}
+        	icon={`${HIKERBOT_TOWN_ICON_PATH}?name=${name}`}
+	        onClick={() => onMarkerClick(id, {lat: lat, lng: lng})}
+	        />
+	      : null;
+    }
+	else {
+    	return currentBounds.contains({lat: lat, lng: lng}) && currentZoom >= showFromZoom && currentZoom <= showToZoom ?
+      		<Marker
+        	key={id}
+        	position={{lat: lat, lng: lng}}
+        	title={description}
+        	icon={`${HIKERBOT_ICON_PATH}/${iconFileName}.png`}
+	        onClick={() => onMarkerClick(id, {lat: lat, lng: lng})}
+	        />
+	      : null;
+    }
 }
 
 const renderLine = (line, currentBounds, currentZoom) => {
@@ -83,7 +97,7 @@ const HampGoogleMap = withGoogleMap(props => (
     defaultZoom={5}
     defaultCenter={{ lat: 40.69, lng: -121.23 }} // @todo: calculate center by used area bounds
   >
-  { 
+  {
     renderFeatures(props.features, props.currentBounds, props.currentZoom, props.onDetailOpen)
   }
 
@@ -136,7 +150,7 @@ class Map extends Component {
   }
 
   render() {
-    const { items } = this.props;          
+    const { items } = this.props;
     return <HampGoogleMap
       containerElement={
         <div style={{ height: "100vh" }} />
