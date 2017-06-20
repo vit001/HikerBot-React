@@ -1,5 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="client" type="NodeJSConfigurationType" factoryName="Node.js" path-to-node="project" path-to-js-file="scripts/start.js" working-dir="$PROJECT_DIR$/client">
-    <method />
-  </configuration>
-</component>
