@@ -139,7 +139,7 @@ const HampGoogleMap = withGoogleMap(props => (
     }
 
     {
-      props.activeDetail && <Dialog title="Detail..." modal={false} open={true} onRequestClose={this.handleClose}>Detail ID: {props.activeDetail.id}</Dialog>
+      props.activeDetail && <Dialog title="Detail..." modal={false} open={true} onRequestClose={props.onDetailClose}>Detail ID: {props.activeDetail.id}</Dialog>
 
       /*<InfoWindow onCloseClick={props.onDetailClose} position={{ lat: props.activeDetail.position.lat, lng: props.activeDetail.position.lng }}><div>test {props.activeDetail.id}</div></InfoWindow>*/
     }
